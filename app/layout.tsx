@@ -4,6 +4,7 @@ import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import WeeklyOrderBanner from '@/components/WeeklyOrderBanner'
 import FloatingMySnacksButton from '@/components/FloatingMySnacksButton'
+import ActivityNotification from '@/components/ActivityNotification'
 
 export const metadata: Metadata = {
   title: 'YUM.GG',
@@ -32,6 +33,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-cream-50 min-h-screen flex flex-col font-pretendard">
+        <ActivityNotification />
         <WeeklyOrderBanner />
         <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
