@@ -163,8 +163,11 @@ export default async function Home() {
 
   return (
     <div>
-      <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent mb-6">
-        🎯 간식 허브
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
+        <span className="text-3xl sm:text-4xl">🎯</span>
+        <span className="bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+          간식 허브
+        </span>
       </h1>
 
       {/* 전체 통계 카드 */}
