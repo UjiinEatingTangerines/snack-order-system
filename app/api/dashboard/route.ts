@@ -22,6 +22,17 @@ export async function GET() {
       where: { createdAt: { gte: oneWeekAgo } }
     })
 
+    // 이번 주 조르기 목록
+    const weeklyProposedSnacks = await prisma.snack.findMany({
+      where: { createdAt: { gte: oneWeekAgo } },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        _count: {
+          select: { votes: true }
+        }
+      }
+    })
+
     // 투표 수 기준 상위 5개 간식 조회
     const topSnacks = await prisma.snack.findMany({
       include: {
@@ -135,6 +146,7 @@ export async function GET() {
       totalOrders,
       weeklySnacks,
       weeklyVotes,
+      weeklyProposedSnacks,
       topCategory,
       topSnacks,
       allTimeTopSnacks,

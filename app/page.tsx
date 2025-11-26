@@ -10,6 +10,14 @@ type DashboardData = {
   totalOrders: number
   weeklySnacks: number
   weeklyVotes: number
+  weeklyProposedSnacks: Array<{
+    id: string
+    name: string
+    category: string | null
+    proposedBy: string | null
+    createdAt: Date
+    _count: { votes: number }
+  }>
   topCategory: string
   topSnacks: Array<{
     id: string
@@ -149,34 +157,53 @@ export default function Home() {
         <OrderStatusBlock />
       </div>
 
-      {/* 이번 주 활동 요약 */}
+      {/* 이번 주 조르기 목록 */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">
-          📊 이번 주 활동 요약
+        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <span>📝</span>
+          이번 주 조르기 목록
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <span className="text-2xl">📝</span>
-            <div>
-              <p className="text-sm text-gray-600">새로 제안된 간식</p>
-              <p className="text-xl font-bold text-gray-900">{data.weeklySnacks}개</p>
-            </div>
+        {data.weeklyProposedSnacks.length === 0 ? (
+          <div className="text-center py-8 bg-gray-50 rounded-lg">
+            <p className="text-gray-500">이번 주에 조른 간식이 없습니다.</p>
           </div>
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <span className="text-2xl">👍</span>
-            <div>
-              <p className="text-sm text-gray-600">받은 투표 수</p>
-              <p className="text-xl font-bold text-gray-900">{data.weeklyVotes}표</p>
-            </div>
+        ) : (
+          <div className="space-y-3">
+            {data.weeklyProposedSnacks.map((snack) => (
+              <div
+                key={snack.id}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-gray-900">{snack.name}</p>
+                    {snack.category && (
+                      <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">
+                        {snack.category}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3 mt-1">
+                    {snack.proposedBy && (
+                      <span className="text-xs text-gray-500">
+                        by {snack.proposedBy}
+                      </span>
+                    )}
+                    <span className="text-xs text-gray-400">
+                      {getTimeAgo(snack.createdAt)}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">👍</span>
+                  <span className="font-semibold text-primary-600">
+                    {snack._count.votes}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <span className="text-2xl">🔥</span>
-            <div>
-              <p className="text-sm text-gray-600">가장 핫한 카테고리</p>
-              <p className="text-xl font-bold text-gray-900">{data.topCategory}</p>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
