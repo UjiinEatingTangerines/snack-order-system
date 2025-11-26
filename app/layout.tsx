@@ -5,7 +5,7 @@ import Footer from '@/components/Footer'
 import WeeklyOrderBanner from '@/components/WeeklyOrderBanner'
 
 export const metadata: Metadata = {
-  title: '간식 주문 시스템',
+  title: 'YUM.GG',
   description: '회사 간식 주문을 쉽고 재미있게',
   icons: {
     icon: [

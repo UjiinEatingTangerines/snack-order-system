@@ -24,8 +24,8 @@ export default function Navigation() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <span className="text-2xl font-bold">🍪</span>
-              <span className="ml-2 text-lg sm:text-xl font-semibold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-                간식 주문 시스템
+              <span className="ml-2 text-lg sm:text-xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+                YUM.GG
               </span>
             </Link>
           </div>
