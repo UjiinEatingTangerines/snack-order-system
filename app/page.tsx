@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import TrendingSnacks from '@/components/TrendingSnacks'
+import OrderStatusBlock from '@/components/OrderStatusBlock'
 
 export const dynamic = 'force-dynamic'
 
@@ -201,6 +202,11 @@ export default async function Home() {
             <div className="text-5xl opacity-80">📦</div>
           </div>
         </div>
+      </div>
+
+      {/* 현재 주문 현황 */}
+      <div className="mb-6">
+        <OrderStatusBlock />
       </div>
 
       {/* 이번 주 활동 요약 */}
