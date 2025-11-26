@@ -90,8 +90,8 @@ export default function MySnacksPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-2">
-            <span className="text-3xl sm:text-4xl">📝</span>
-            내가 제안한 간식
+            <span className="text-3xl sm:text-4xl">🎒</span>
+            내 간식 주머니
           </h1>
           <p className="text-sm text-gray-600 mt-2">
             {userName}님이 제안한 간식 목록입니다
