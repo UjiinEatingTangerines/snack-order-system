@@ -319,47 +319,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="mt-6 bg-gradient-to-r from-cream-100 to-primary-50 border border-primary-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-primary-900 mb-4 flex items-center gap-2">
-          <span>⚡</span>
-          빠른 작업
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <a
-            href="/snacks"
-            className="flex items-center gap-3 p-4 bg-white rounded-lg border-2 border-primary-300 hover:border-primary-500 hover:shadow-md transition-all"
-          >
-            <span className="text-3xl">🎯</span>
-            <div>
-              <p className="font-semibold text-gray-900">투표하러 가기</p>
-              <p className="text-xs text-gray-600">원하는 간식에 투표하세요</p>
-            </div>
-          </a>
-
-          <a
-            href="/propose"
-            className="flex items-center gap-3 p-4 bg-white rounded-lg border-2 border-primary-300 hover:border-primary-500 hover:shadow-md transition-all"
-          >
-            <span className="text-3xl">📝</span>
-            <div>
-              <p className="font-semibold text-gray-900">간식 제안하기</p>
-              <p className="text-xs text-gray-600">새로운 간식을 추천하세요</p>
-            </div>
-          </a>
-
-          <a
-            href="/orders/new"
-            className="flex items-center gap-3 p-4 bg-white rounded-lg border-2 border-primary-300 hover:border-primary-500 hover:shadow-md transition-all"
-          >
-            <span className="text-3xl">📦</span>
-            <div>
-              <p className="font-semibold text-gray-900">주문 생성</p>
-              <p className="text-xs text-gray-600">주문 목록을 만드세요</p>
-            </div>
-          </a>
-        </div>
-      </div>
     </div>
   )
 }

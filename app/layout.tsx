@@ -4,6 +4,7 @@ import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import WeeklyOrderBanner from '@/components/WeeklyOrderBanner'
 import FloatingMySnacksButton from '@/components/FloatingMySnacksButton'
+import FloatingVoteButton from '@/components/FloatingVoteButton'
 import ActivityNotification from '@/components/ActivityNotification'
 
 export const metadata: Metadata = {
@@ -40,6 +41,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <FloatingVoteButton />
         <FloatingMySnacksButton />
       </body>
     </html>
