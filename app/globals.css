@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 메이플스토리 스타일 커서 */
+* {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3C!-- 손가락 모양 --%3E%3Cpath fill='%23FFE4B5' stroke='%23000' stroke-width='2' d='M8 4 L10 2 L12 4 L12 14 L10 16 L8 14 Z'/%3E%3Cpath fill='%23FFF8DC' stroke='%23000' stroke-width='2' d='M12 6 L20 14 L18 16 L10 8 Z'/%3E%3Cpath fill='%23FFE4B5' stroke='%23000' stroke-width='2' d='M18 16 L22 20 L20 22 L16 18 Z'/%3E%3Ccircle cx='10' cy='6' r='2' fill='%23FFF'/%3E%3C/svg%3E"), auto;
+}
+
+/* 링크/버튼 호버 시 - 더 큰 손가락 */
+a, button, [role="button"], .cursor-pointer {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3C!-- 클릭하는 손 --%3E%3Cellipse cx='18' cy='26' rx='8' ry='6' fill='%23FFE4B5' stroke='%23000' stroke-width='2'/%3E%3Cpath fill='%23FFE4B5' stroke='%23000' stroke-width='2' d='M14 18 L14 8 L16 6 L18 8 L18 18 Z'/%3E%3Cpath fill='%23FFE4B5' stroke='%23000' stroke-width='2' d='M18 18 L18 6 L20 4 L22 6 L22 18 Z'/%3E%3Cpath fill='%23FFF8DC' stroke='%23000' stroke-width='1.5' d='M16 22 L20 22 L20 26 L16 26 Z'/%3E%3C/svg%3E"), pointer !important;
+}
+
+/* 입력 필드 - I자 커서 */
+input, textarea, select {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='28' viewBox='0 0 20 28'%3E%3Crect x='8' y='0' width='4' height='28' fill='%23FF6B2C' rx='2'/%3E%3Crect x='4' y='0' width='12' height='4' fill='%23FF6B2C' rx='2'/%3E%3Crect x='4' y='24' width='12' height='4' fill='%23FF6B2C' rx='2'/%3E%3C/svg%3E"), text !important;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
