@@ -1,147 +1,76 @@
-import { prisma } from '@/lib/prisma'
+'use client'
+
+import { useEffect, useState } from 'react'
 import TrendingSnacks from '@/components/TrendingSnacks'
 import OrderStatusBlock from '@/components/OrderStatusBlock'
 
-export const dynamic = 'force-dynamic'
+type DashboardData = {
+  totalSnacks: number
+  totalVotes: number
+  totalOrders: number
+  weeklySnacks: number
+  weeklyVotes: number
+  topCategory: string
+  topSnacks: Array<{
+    id: string
+    name: string
+    category: string | null
+    _count: { votes: number }
+  }>
+  allTimeTopSnacks: Array<{
+    id: string
+    name: string
+    _count: { orderItems: number; votes: number }
+  }>
+  recentVotes: Array<{
+    id: string
+    voterName: string | null
+    createdAt: Date
+    snack: { name: string }
+  }>
+  recentProposals: Array<{
+    id: string
+    name: string
+    createdAt: Date
+  }>
+  monthlyMVP: {
+    name: string
+    _count: { votes: number }
+  } | null
+  nextOrderDate: Date
+  trendingSnacks: Array<{
+    id: string
+    name: string
+    url: string
+    imageUrl: string | null
+    rank: number
+  }>
+}
 
-export default async function Home() {
-  // 전체 통계
-  const totalSnacks = await prisma.snack.count()
-  const totalVotes = await prisma.vote.count()
-  const totalOrders = await prisma.order.count()
+export default function Home() {
+  const [data, setData] = useState<DashboardData | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  // 이번 주 데이터 (지난 7일)
-  const oneWeekAgo = new Date()
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-
-  const weeklySnacks = await prisma.snack.count({
-    where: { createdAt: { gte: oneWeekAgo } }
-  })
-
-  const weeklyVotes = await prisma.vote.count({
-    where: { createdAt: { gte: oneWeekAgo } }
-  })
-
-  // 투표 수 기준 상위 5개 간식 조회
-  const topSnacks = await prisma.snack.findMany({
-    include: {
-      _count: {
-        select: { votes: true }
+  const fetchDashboardData = async () => {
+    try {
+      const response = await fetch('/api/dashboard')
+      if (response.ok) {
+        const dashboardData = await response.json()
+        setData(dashboardData)
       }
-    },
-    orderBy: {
-      votes: {
-        _count: 'desc'
-      }
-    },
-    take: 5
-  })
-
-  // 역대 인기 간식 (주문에서 가장 많이 나타난 간식)
-  const allTimeTopSnacks = await prisma.snack.findMany({
-    include: {
-      _count: {
-        select: { orderItems: true, votes: true }
-      }
-    },
-    orderBy: {
-      orderItems: {
-        _count: 'desc'
-      }
-    },
-    take: 3
-  })
-
-  // 최근 제안된 간식
-  const recentSnacks = await prisma.snack.findMany({
-    take: 3,
-    orderBy: {
-      createdAt: 'desc'
-    },
-    include: {
-      _count: {
-        select: { votes: true }
-      }
+    } catch (error) {
+      console.error('대시보드 데이터 조회 실패:', error)
+    } finally {
+      setLoading(false)
     }
-  })
-
-  // 트렌딩 간식
-  const trendingSnacks = await prisma.trendingSnack.findMany({
-    orderBy: {
-      rank: 'asc'
-    },
-    take: 10
-  })
-
-  // 카테고리별 분포
-  const snacksByCategory = await prisma.snack.groupBy({
-    by: ['category'],
-    _count: true
-  })
-
-  const totalCategorized = snacksByCategory.reduce((sum, cat) => sum + cat._count, 0)
-  const categoryData = snacksByCategory
-    .filter(cat => cat.category)
-    .map(cat => ({
-      name: cat.category!,
-      count: cat._count,
-      percentage: Math.round((cat._count / totalCategorized) * 100)
-    }))
-    .sort((a, b) => b.count - a.count)
-
-  // 최근 활동 (투표 + 간식 제안)
-  const recentVotes = await prisma.vote.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-    include: { snack: true }
-  })
-
-  const recentProposals = await prisma.snack.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' }
-  })
-
-  // 이달의 MVP (이번 달 가장 많은 투표)
-  const firstDayOfMonth = new Date()
-  firstDayOfMonth.setDate(1)
-  firstDayOfMonth.setHours(0, 0, 0, 0)
-
-  const monthlyMVP = await prisma.snack.findFirst({
-    where: {
-      votes: {
-        some: {
-          createdAt: { gte: firstDayOfMonth }
-        }
-      }
-    },
-    include: {
-      _count: {
-        select: {
-          votes: {
-            where: { createdAt: { gte: firstDayOfMonth } }
-          }
-        }
-      }
-    },
-    orderBy: {
-      votes: { _count: 'desc' }
-    }
-  })
-
-  // 다음 월요일 계산
-  const getNextMonday = () => {
-    const today = new Date()
-    const dayOfWeek = today.getDay()
-    const daysUntilMonday = dayOfWeek === 0 ? 1 : 8 - dayOfWeek
-    const nextMonday = new Date(today)
-    nextMonday.setDate(today.getDate() + daysUntilMonday)
-    return nextMonday
   }
 
-  const nextOrderDate = getNextMonday()
-
-  // 가장 인기있는 카테고리
-  const topCategory = categoryData[0]?.name || '없음'
+  useEffect(() => {
+    fetchDashboardData()
+    // 30초마다 자동 새로고침
+    const interval = setInterval(fetchDashboardData, 30000)
+    return () => clearInterval(interval)
+  }, [])
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('ko-KR', {
@@ -162,6 +91,17 @@ export default async function Home() {
     return `${days}일 전`
   }
 
+  if (loading || !data) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">로딩 중...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h1 className="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-3">
@@ -177,7 +117,7 @@ export default async function Home() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-primary-100 font-medium">총 간식 수</p>
-              <p className="text-4xl font-bold text-white mt-2">{totalSnacks}개</p>
+              <p className="text-4xl font-bold text-white mt-2">{data.totalSnacks}개</p>
             </div>
             <div className="text-5xl opacity-80">🍪</div>
           </div>
@@ -187,7 +127,7 @@ export default async function Home() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-accent-100 font-medium">총 투표 수</p>
-              <p className="text-4xl font-bold text-white mt-2">{totalVotes}표</p>
+              <p className="text-4xl font-bold text-white mt-2">{data.totalVotes}표</p>
             </div>
             <div className="text-5xl opacity-80">👍</div>
           </div>
@@ -197,7 +137,7 @@ export default async function Home() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-cream-100 font-medium">총 주문 횟수</p>
-              <p className="text-4xl font-bold text-white mt-2">{totalOrders}회</p>
+              <p className="text-4xl font-bold text-white mt-2">{data.totalOrders}회</p>
             </div>
             <div className="text-5xl opacity-80">📦</div>
           </div>
@@ -219,21 +159,21 @@ export default async function Home() {
             <span className="text-2xl">📝</span>
             <div>
               <p className="text-sm text-gray-600">새로 제안된 간식</p>
-              <p className="text-xl font-bold text-gray-900">{weeklySnacks}개</p>
+              <p className="text-xl font-bold text-gray-900">{data.weeklySnacks}개</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <span className="text-2xl">👍</span>
             <div>
               <p className="text-sm text-gray-600">받은 투표 수</p>
-              <p className="text-xl font-bold text-gray-900">{weeklyVotes}표</p>
+              <p className="text-xl font-bold text-gray-900">{data.weeklyVotes}표</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <span className="text-2xl">🔥</span>
             <div>
               <p className="text-sm text-gray-600">가장 핫한 카테고리</p>
-              <p className="text-xl font-bold text-gray-900">{topCategory}</p>
+              <p className="text-xl font-bold text-gray-900">{data.topCategory}</p>
             </div>
           </div>
         </div>
@@ -245,13 +185,13 @@ export default async function Home() {
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             인기 간식 Top 5
           </h2>
-          {topSnacks.length === 0 ? (
+          {data.topSnacks.length === 0 ? (
             <p className="text-gray-500 text-sm">
               아직 투표된 간식이 없습니다.
             </p>
           ) : (
             <div className="space-y-3">
-              {topSnacks.map((snack, index) => (
+              {data.topSnacks.map((snack, index) => (
                 <div
                   key={snack.id}
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
@@ -280,7 +220,7 @@ export default async function Home() {
         </div>
 
         {/* 트렌딩 간식 */}
-        <TrendingSnacks initialSnacks={trendingSnacks} />
+        <TrendingSnacks initialSnacks={data.trendingSnacks} />
       </div>
 
       {/* 추가 정보 그리드 */}
@@ -291,11 +231,11 @@ export default async function Home() {
             <span>🏆</span>
             역대 인기 간식
           </h2>
-          {allTimeTopSnacks.length === 0 ? (
+          {data.allTimeTopSnacks.length === 0 ? (
             <p className="text-gray-500 text-sm">주문 이력이 없습니다.</p>
           ) : (
             <div className="space-y-3">
-              {allTimeTopSnacks.map((snack, index) => (
+              {data.allTimeTopSnacks.map((snack, index) => (
                 <div key={snack.id} className="flex items-center gap-3 p-3 bg-gradient-to-r from-cream-100 to-primary-50 rounded-lg border border-cream-300">
                   <span className="text-2xl">
                     {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
@@ -312,32 +252,13 @@ export default async function Home() {
           )}
         </div>
 
-        {/* 카테고리별 분포 */}
+        {/* 카테고리별 분포 - 나중에 API로 처리 */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <span>📊</span>
             카테고리 분포
           </h2>
-          {categoryData.length === 0 ? (
-            <p className="text-gray-500 text-sm">카테고리 데이터가 없습니다.</p>
-          ) : (
-            <div className="space-y-3">
-              {categoryData.map((cat) => (
-                <div key={cat.name}>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="font-medium text-gray-700">{cat.name}</span>
-                    <span className="text-gray-600">{cat.percentage}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-gradient-to-r from-primary-400 to-accent-600 h-2 rounded-full transition-all"
-                      style={{ width: `${cat.percentage}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <p className="text-gray-500 text-sm">곧 업데이트 예정입니다.</p>
         </div>
 
         {/* 다가오는 이벤트 */}
@@ -349,16 +270,16 @@ export default async function Home() {
           <div className="space-y-4">
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-blue-700 font-medium mb-1">다음 주문일</p>
-              <p className="text-lg font-bold text-blue-900">{formatDate(nextOrderDate)}</p>
+              <p className="text-lg font-bold text-blue-900">{formatDate(data.nextOrderDate)}</p>
               <p className="text-xs text-blue-600 mt-1">매주 월요일 오전 9시</p>
             </div>
 
-            {monthlyMVP && (
+            {data.monthlyMVP && (
               <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
                 <p className="text-sm text-purple-700 font-medium mb-2">🌟 이달의 MVP</p>
-                <p className="font-bold text-purple-900">{monthlyMVP.name}</p>
+                <p className="font-bold text-purple-900">{data.monthlyMVP.name}</p>
                 <p className="text-xs text-purple-600 mt-1">
-                  {monthlyMVP._count.votes}표 획득
+                  {data.monthlyMVP._count.votes}표 획득
                 </p>
               </div>
             )}
@@ -373,7 +294,7 @@ export default async function Home() {
           최근 활동
         </h2>
         <div className="space-y-2">
-          {recentVotes.slice(0, 5).map((vote) => (
+          {data.recentVotes.slice(0, 5).map((vote) => (
             <div key={vote.id} className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
               <span className="text-xl">👍</span>
               <div className="flex-1">
@@ -384,7 +305,7 @@ export default async function Home() {
               </div>
             </div>
           ))}
-          {recentProposals.slice(0, 3).map((snack) => (
+          {data.recentProposals.slice(0, 3).map((snack) => (
             <div key={snack.id} className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
               <span className="text-xl">📝</span>
               <div className="flex-1">
