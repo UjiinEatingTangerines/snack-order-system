@@ -26,6 +26,7 @@ export default function ProposePage() {
     url: '',
     imageUrl: '',
     category: '',
+    price: '',
     proposedBy: '',
   })
 
@@ -65,6 +66,7 @@ export default function ProposePage() {
       url: item.link,
       imageUrl: item.image,
       category: item.category || item.brand || '기타',
+      price: item.lprice || '',
     })
     setShowSearch(false)
     setSearchResults([])
@@ -264,6 +266,25 @@ export default function ProposePage() {
               <option value="음료">음료</option>
               <option value="기타">기타</option>
             </select>
+          </div>
+
+          {/* 가격 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              가격 (선택)
+            </label>
+            <input
+              type="number"
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              placeholder="예: 3500"
+              min="0"
+              step="100"
+            />
+            <p className="mt-1 text-sm text-gray-500">
+              네이버 검색으로 선택한 경우 자동 입력됩니다
+            </p>
           </div>
 
           {/* 제안자 */}

@@ -68,7 +68,7 @@ ADMIN_PASSWORD="your-admin-password"
 SESSION_SECRET="your-secret-key-change-this-in-production"
 
 # 앱 버전
-NEXT_PUBLIC_APP_VERSION="0.6.0"
+NEXT_PUBLIC_APP_VERSION="0.7.0"
 NEXT_PUBLIC_BUILD_DATE="2025-11-26"
 ```
 
@@ -265,6 +265,15 @@ npm run lint
 ```
 
 ## 🆕 업데이트 내역
+
+### v0.7.0 (2025-11-26)
+- 💰 간식 가격 기능 추가
+  - 네이버 쇼핑 검색 시 가격 자동 입력
+  - 수기로 가격 입력 가능
+  - 주문 생성 시 개별 가격 수정 가능
+  - 주문 총 금액 자동 계산 및 저장
+- 🔒 일반 사용자에게 주문 관련 버튼 숨김
+- 📊 주간 배너에 주문된 간식 목록 표시 (클릭하여 펼침/접기)
 
 ### v0.6.0 (2025-11-26)
 - 🎈 플로팅 버튼 둥둥 떠다니는 애니메이션 추가

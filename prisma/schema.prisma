@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -17,6 +17,7 @@ model Snack {
   url         String      // 구매 링크
   imageUrl    String?
   category    String?
+  price       Float?      // 가격 (네이버 또는 수기 입력)
   proposedBy  String?     // 제안자
   createdAt   DateTime    @default(now())
   votes       Vote[]

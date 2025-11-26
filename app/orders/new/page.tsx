@@ -9,6 +9,7 @@ type Snack = {
   url: string
   imageUrl: string | null
   category: string | null
+  price: number | null
   _count: {
     votes: number
   }
@@ -17,6 +18,7 @@ type Snack = {
 type OrderItem = {
   snack: Snack
   quantity: number
+  price: number | null  // 수기 입력 가능한 가격
 }
 
 export default function NewOrderPage() {
@@ -54,7 +56,8 @@ export default function NewOrderPage() {
       // 이전 주문 항목을 현재 주문에 추가
       const previousItems = order.items.map((item: any) => ({
         snack: item.snack,
-        quantity: item.quantity
+        quantity: item.quantity,
+        price: item.snack.price
       }))
 
       setOrderItems(previousItems)
@@ -83,7 +86,7 @@ export default function NewOrderPage() {
       const topVoted = sorted
         .filter((s: Snack) => s._count.votes > 0)
         .slice(0, 5)
-        .map((s: Snack) => ({ snack: s, quantity: 1 }))
+        .map((s: Snack) => ({ snack: s, quantity: 1, price: s.price }))
 
       setOrderItems(topVoted)
     } catch (error) {
@@ -102,8 +105,16 @@ export default function NewOrderPage() {
           : item
       ))
     } else {
-      setOrderItems([...orderItems, { snack, quantity: 1 }])
+      setOrderItems([...orderItems, { snack, quantity: 1, price: snack.price }])
     }
+  }
+
+  const updatePrice = (snackId: string, price: number | null) => {
+    setOrderItems(orderItems.map(item =>
+      item.snack.id === snackId
+        ? { ...item, price }
+        : item
+    ))
   }
 
   const removeItem = (snackId: string) => {
@@ -131,6 +142,14 @@ export default function NewOrderPage() {
     setSubmitting(true)
 
     try {
+      // 총 금액 계산 (가격이 있는 항목만)
+      const totalCost = orderItems.reduce((sum, item) => {
+        if (item.price) {
+          return sum + (item.price * item.quantity)
+        }
+        return sum
+      }, 0)
+
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -139,6 +158,7 @@ export default function NewOrderPage() {
             snackId: item.snack.id,
             quantity: item.quantity
           })),
+          totalCost: totalCost > 0 ? totalCost : null,
           notes
         })
       })
@@ -211,6 +231,18 @@ export default function NewOrderPage() {
                       <p className="text-sm text-gray-500">
                         {item.snack._count.votes}표
                       </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <input
+                          type="number"
+                          value={item.price || ''}
+                          onChange={(e) => updatePrice(item.snack.id, e.target.value ? parseFloat(e.target.value) : null)}
+                          className="w-24 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-orange-500"
+                          placeholder="가격"
+                          min="0"
+                          step="100"
+                        />
+                        <span className="text-xs text-gray-500">원</span>
+                      </div>
                       <a
                         href={item.snack.url}
                         target="_blank"
@@ -293,6 +325,17 @@ export default function NewOrderPage() {
                 <span className="text-gray-600">총 수량</span>
                 <span className="font-medium">
                   {orderItems.reduce((sum, item) => sum + item.quantity, 0)}개
+                </span>
+              </div>
+              <div className="flex justify-between text-sm pt-3 border-t border-gray-200">
+                <span className="text-gray-600 font-medium">총 금액</span>
+                <span className="font-bold text-orange-600">
+                  {orderItems.reduce((sum, item) => {
+                    if (item.price) {
+                      return sum + (item.price * item.quantity)
+                    }
+                    return sum
+                  }, 0).toLocaleString()}원
                 </span>
               </div>
             </div>

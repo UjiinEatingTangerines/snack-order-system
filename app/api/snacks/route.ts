@@ -27,12 +27,15 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, url, imageUrl, category, proposedBy } = body
+    const { name, url, imageUrl, category, price, proposedBy } = body
 
     // 필수 필드 검증
     if (!name || !url) {
       return apiError(400, '간식 이름과 구매 링크는 필수입니다')
     }
+
+    // 가격 파싱
+    const parsedPrice = price ? parseFloat(price) : null
 
     // 간식 생성
     const snack = await prisma.snack.create({
@@ -41,6 +44,7 @@ export async function POST(request: Request) {
         url,
         imageUrl: imageUrl || null,
         category: category || null,
+        price: parsedPrice,
         proposedBy: proposedBy || null,
       }
     })
