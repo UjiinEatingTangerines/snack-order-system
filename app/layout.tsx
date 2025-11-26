@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
+import WeeklyOrderBanner from '@/components/WeeklyOrderBanner'
 
 export const metadata: Metadata = {
   title: '간식 주문 시스템',
@@ -30,6 +31,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-cream-50 min-h-screen flex flex-col font-pretendard">
+        <WeeklyOrderBanner />
         <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
           {children}
