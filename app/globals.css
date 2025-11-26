@@ -2,21 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 메이플스토리 스타일 커서 - 하얀 장갑 손 */
-* {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3C!-- 기본 포인터 손 --%3E%3Cpath fill='%23FFFFFF' stroke='%23000000' stroke-width='1.5' d='M4,2 L4,18 L8,14 L10,18 L12,17 L10,13 L14,13 L14,2 Z'/%3E%3Cpath fill='%23E8E8E8' d='M4,2 L6,2 L6,16 L8,14 L10,17 L11,16.5 L9,13 L13,13 L13,2 L4,2'/%3E%3C/svg%3E"), auto;
-}
-
-/* 링크/버튼 호버 시 - 클릭하는 손 */
-a, button, [role="button"], .cursor-pointer {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3C!-- 손가락 펴진 모양 --%3E%3Cpath fill='%23FFFFFF' stroke='%23000000' stroke-width='1.5' d='M8,4 L8,14 L6,14 L6,18 L8,18 L8,20 L10,20 L10,18 L12,18 L12,16 L14,16 L14,14 L16,14 L16,4 Z'/%3E%3Cpath fill='%23FFFFFF' stroke='%23000000' stroke-width='1.5' d='M16,2 L16,12 L18,12 L18,4 L20,4 L20,12 L22,12 L22,6 L24,6 L24,14 L20,18 L10,18'/%3E%3Cpath fill='%23E8E8E8' d='M9,5 L9,14 L11,14 L11,5 Z M17,3 L17,11 L19,11 L19,5 L21,5 L21,11 L23,11 L23,7'/%3E%3C/svg%3E"), pointer !important;
-}
-
-/* 입력 필드 - 텍스트 커서 */
-input, textarea, select {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='24' viewBox='0 0 12 24'%3E%3Crect x='5' y='0' width='2' height='24' fill='%23000000'/%3E%3Crect x='2' y='0' width='8' height='3' fill='%23000000'/%3E%3Crect x='2' y='21' width='8' height='3' fill='%23000000'/%3E%3C/svg%3E"), text !important;
-}
-
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
