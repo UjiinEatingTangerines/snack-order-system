@@ -1,5 +1,7 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+
 type ErrorTemplate = {
   emoji: string
   title: string
@@ -149,8 +151,19 @@ export default function ErrorDisplay({
   error?: Error & { digest?: string }
   reset?: () => void
 }) {
-  // 랜덤 템플릿 선택
-  const template = errorTemplates[Math.floor(Math.random() * errorTemplates.length)]
+  // 랜덤 템플릿 선택 (최초 1회)
+  const [template, setTemplate] = useState(() =>
+    errorTemplates[Math.floor(Math.random() * errorTemplates.length)]
+  )
+
+  // 5초마다 템플릿 변경
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTemplate(errorTemplates[Math.floor(Math.random() * errorTemplates.length)])
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div className="min-h-[400px] flex items-center justify-center p-4">
