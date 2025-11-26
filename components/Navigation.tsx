@@ -50,8 +50,8 @@ export default function Navigation() {
   const allLinks = [
     { href: '/', label: '간식 허브', adminOnly: false },
     { href: '/my-snacks', label: '내 간식 주머니', adminOnly: false },
+    { href: '/propose', label: '간식 제안', adminOnly: false },
     { href: '/snacks', label: '간식 목록', adminOnly: true },
-    { href: '/propose', label: '간식 제안', adminOnly: true },
     { href: '/orders', label: '주문 이력', adminOnly: true },
     { href: '/orders/new', label: '주문하기', adminOnly: true },
   ]
