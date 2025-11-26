@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 
 type Snack = {
@@ -20,8 +20,23 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
   const [snacks, setSnacks] = useState(initialSnacks)
   const [filter, setFilter] = useState<string>('all')
   const [votingSnackId, setVotingSnackId] = useState<string | null>(null)
+  const [votedSnacks, setVotedSnacks] = useState<Set<string>>(new Set())
+
+  // 로컬스토리지에서 투표 이력 불러오기
+  useEffect(() => {
+    const voted = localStorage.getItem('votedSnacks')
+    if (voted) {
+      setVotedSnacks(new Set(JSON.parse(voted)))
+    }
+  }, [])
 
   const handleVote = async (snackId: string) => {
+    // 이미 투표한 간식인지 확인
+    if (votedSnacks.has(snackId)) {
+      alert('이미 투표한 간식입니다.')
+      return
+    }
+
     setVotingSnackId(snackId)
 
     try {
@@ -40,6 +55,12 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
             ? { ...s, _count: { votes: voteCount } }
             : s
         ))
+
+        // 투표한 간식 기록
+        const newVotedSnacks = new Set(votedSnacks)
+        newVotedSnacks.add(snackId)
+        setVotedSnacks(newVotedSnacks)
+        localStorage.setItem('votedSnacks', JSON.stringify(Array.from(newVotedSnacks)))
       } else {
         alert('투표 중 오류가 발생했습니다.')
       }
@@ -122,12 +143,12 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
 
               {/* 내용 */}
               <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                <div className="flex justify-between items-start mb-2 gap-2">
+                  <h3 className="text-lg font-semibold text-gray-900 flex-1">
                     {snack.name}
                   </h3>
                   {snack.category && (
-                    <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
+                    <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full whitespace-nowrap flex-shrink-0">
                       {snack.category}
                     </span>
                   )}
@@ -142,10 +163,14 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
                 <div className="flex items-center justify-between gap-3">
                   <button
                     onClick={() => handleVote(snack.id)}
-                    disabled={votingSnackId === snack.id}
-                    className="flex items-center gap-2 px-3 py-2 bg-orange-50 hover:bg-primary-100 text-primary-700 rounded-md transition-colors disabled:opacity-50"
+                    disabled={votingSnackId === snack.id || votedSnacks.has(snack.id)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                      votedSnacks.has(snack.id)
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-orange-50 hover:bg-primary-100 text-primary-700'
+                    } disabled:opacity-50`}
                   >
-                    <span className="text-xl">👍</span>
+                    <span className="text-xl">{votedSnacks.has(snack.id) ? '✓' : '👍'}</span>
                     <span className="text-sm font-medium">
                       {snack._count.votes}
                     </span>
