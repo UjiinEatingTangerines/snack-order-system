@@ -7,7 +7,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "node scripts/set-version.js && prisma generate && next build",
+    "vercel-build": "node scripts/set-version.js && prisma migrate deploy && prisma generate && next build",
+    "postinstall": "prisma generate",
     "version:patch": "npm version patch",
     "version:minor": "npm version minor",
     "version:major": "npm version major"
