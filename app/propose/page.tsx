@@ -21,6 +21,7 @@ export default function ProposePage() {
   const [searching, setSearching] = useState(false)
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [showSearch, setShowSearch] = useState(true)
+  const [showSuccessOverlay, setShowSuccessOverlay] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     url: '',
@@ -100,8 +101,10 @@ export default function ProposePage() {
       })
 
       if (response.ok) {
-        alert('간식이 제안되었습니다!')
-        router.push('/my-snacks')
+        setShowSuccessOverlay(true)
+        setTimeout(() => {
+          router.push('/my-snacks')
+        }, 800)
       } else {
         const error = await response.json()
         alert(`오류: ${error.message}`)
@@ -280,7 +283,7 @@ export default function ProposePage() {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               placeholder="예: 3500"
               min="0"
-              step="100"
+              step="1"
             />
             <p className="mt-1 text-sm text-gray-500">
               네이버 검색으로 선택한 경우 자동 입력됩니다
@@ -320,6 +323,16 @@ export default function ProposePage() {
           </div>
         </form>
       </div>
+
+      {/* 성공 오버레이 */}
+      {showSuccessOverlay && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <div className="bg-white/95 rounded-2xl shadow-2xl p-8 text-center animate-scaleIn">
+            <div className="text-6xl mb-4">✅</div>
+            <p className="text-2xl font-bold text-gray-800">완료됨</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
