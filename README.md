@@ -57,7 +57,8 @@ npm run dev
 ```env
 # 데이터베이스
 DATABASE_URL="file:./dev.db"  # 로컬 개발용 SQLite
-# DATABASE_URL="postgresql://..."  # 프로덕션용 PostgreSQL
+# DATABASE_URL="postgresql://..."  # 프로덕션용 PostgreSQL (Pooler URL)
+# DIRECT_URL="postgresql://..."    # 프로덕션용 PostgreSQL (Direct URL, 마이그레이션용)
 
 # 네이버 쇼핑 API (필수)
 NAVER_CLIENT_ID="발급받은_클라이언트_ID"
@@ -71,6 +72,19 @@ SESSION_SECRET="your-secret-key-change-this-in-production"
 NEXT_PUBLIC_APP_VERSION="0.7.0"
 NEXT_PUBLIC_BUILD_DATE="2025-11-26"
 ```
+
+#### Neon 데이터베이스 사용 시 (Vercel 배포)
+
+Neon을 사용하는 경우, 두 가지 연결 URL이 필요합니다:
+
+1. **DATABASE_URL**: Connection pooling URL (일반 쿼리용)
+   - 예: `postgresql://user:password@host-pooler.region.aws.neon.tech/dbname?sslmode=require`
+
+2. **DIRECT_URL**: Direct connection URL (마이그레이션용)
+   - 예: `postgresql://user:password@host.region.aws.neon.tech/dbname?sslmode=require`
+
+Vercel 환경 변수에 두 URL을 모두 설정해야 합니다:
+- **Settings** → **Environment Variables**에서 `DATABASE_URL`과 `DIRECT_URL` 추가
 
 ### 3. 네이버 API 발급 방법
 
