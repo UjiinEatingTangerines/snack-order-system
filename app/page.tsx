@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import TrendingSnacks from '@/components/TrendingSnacks'
 
 export const dynamic = 'force-dynamic'
 
@@ -270,59 +271,7 @@ export default async function Home() {
         </div>
 
         {/* 트렌딩 간식 */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">
-              🔥 지금 핫한 간식
-            </h2>
-            <form action="/api/trending" method="POST">
-              <button
-                type="submit"
-                className="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded hover:bg-orange-200 transition-colors"
-              >
-                새로고침
-              </button>
-            </form>
-          </div>
-          {trendingSnacks.length === 0 ? (
-            <p className="text-gray-500 text-sm">
-              트렌딩 데이터가 없습니다. 새로고침 버튼을 눌러주세요.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {trendingSnacks.map((snack) => (
-                <div
-                  key={snack.id}
-                  className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <span className="text-sm font-bold text-orange-600 w-6">
-                    #{snack.rank}
-                  </span>
-                  {snack.imageUrl && (
-                    <img
-                      src={snack.imageUrl}
-                      alt={snack.name}
-                      className="w-12 h-12 object-cover rounded"
-                    />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 text-sm truncate">
-                      {snack.name}
-                    </p>
-                  </div>
-                  <a
-                    href={snack.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-orange-600 hover:text-orange-700 whitespace-nowrap"
-                  >
-                    보기 →
-                  </a>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <TrendingSnacks initialSnacks={trendingSnacks} />
       </div>
 
       {/* 추가 정보 그리드 */}
