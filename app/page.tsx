@@ -31,6 +31,11 @@ type DashboardData = {
     name: string
     _count: { orderItems: number; votes: number }
   }>
+  categoryData: Array<{
+    name: string
+    count: number
+    percentage: number
+  }>
   recentVotes: Array<{
     id: string
     voterName: string | null
@@ -316,13 +321,44 @@ export default function Home() {
           )}
         </div>
 
-        {/* 카테고리별 분포 - 나중에 API로 처리 */}
+        {/* 카테고리별 분포 */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <span>📊</span>
             카테고리 분포
           </h2>
-          <p className="text-gray-500 text-sm">곧 업데이트 예정입니다.</p>
+          {data.categoryData.length === 0 ? (
+            <p className="text-gray-500 text-sm">카테고리가 등록된 간식이 없습니다.</p>
+          ) : (
+            <div className="space-y-3">
+              {data.categoryData.slice(0, 5).map((category, index) => (
+                <div key={category.name}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium text-gray-700">{category.name}</span>
+                    <span className="text-sm text-gray-500">{category.count}개</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div
+                      className="h-2.5 rounded-full transition-all"
+                      style={{
+                        width: `${category.percentage}%`,
+                        backgroundColor: [
+                          '#f59e0b',
+                          '#ec4899',
+                          '#8b5cf6',
+                          '#3b82f6',
+                          '#10b981'
+                        ][index % 5]
+                      }}
+                    ></div>
+                  </div>
+                  <div className="text-xs text-gray-400 mt-0.5">
+                    {category.percentage}%
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* 다가오는 이벤트 */}

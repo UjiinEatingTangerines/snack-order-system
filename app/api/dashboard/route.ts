@@ -155,6 +155,7 @@ export async function GET() {
       topCategory,
       topSnacks,
       allTimeTopSnacks,
+      categoryData,
       recentVotes,
       recentProposals,
       monthlyMVP,
