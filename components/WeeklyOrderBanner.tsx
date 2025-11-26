@@ -59,24 +59,46 @@ export default function WeeklyOrderBanner() {
     <div className="bg-gradient-to-r from-primary-500 to-accent-500 text-white shadow-md">
       {/* 메인 배너 */}
       <div
-        className="py-3 px-4 cursor-pointer hover:bg-white/10 transition-colors"
+        className="py-4 px-4 cursor-pointer hover:bg-white/10 transition-colors"
         onClick={() => setExpanded(!expanded)}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-center gap-4 text-sm sm:text-base">
-          <span className="font-semibold">📊 이번 주 주문 현황</span>
-          <div className="flex items-center gap-4">
-            <span className="bg-white/20 px-3 py-1 rounded-full">
-              주문 <span className="font-bold">{orderCount}</span>건
-            </span>
-            <span className="bg-white/20 px-3 py-1 rounded-full">
-              총 <span className="font-bold text-lg">{totalCost.toLocaleString()}</span>원
-            </span>
-            {orderedSnacks.length > 0 && (
-              <span className="text-xs opacity-80">
-                {expanded ? '▲ 닫기' : '▼ 주문 목록 보기'}
-              </span>
-            )}
+        <div className="max-w-7xl mx-auto flex items-center justify-center gap-6 text-sm sm:text-base">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">📦</span>
+            <div className="flex flex-col items-start">
+              <span className="text-xs opacity-80">이번 주</span>
+              <span className="font-bold text-lg">{orderCount}건</span>
+            </div>
           </div>
+
+          <div className="h-10 w-px bg-white/30"></div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">💰</span>
+            <div className="flex flex-col items-start">
+              <span className="text-xs opacity-80">총 금액</span>
+              <span className="font-bold text-xl">{totalCost.toLocaleString()}원</span>
+            </div>
+          </div>
+
+          {orderedSnacks.length > 0 && (
+            <>
+              <div className="h-10 w-px bg-white/30"></div>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🍪</span>
+                <div className="flex flex-col items-start">
+                  <span className="text-xs opacity-80">간식 종류</span>
+                  <span className="font-bold text-lg">{orderedSnacks.length}개</span>
+                </div>
+              </div>
+            </>
+          )}
+
+          {orderedSnacks.length > 0 && (
+            <span className="text-xs opacity-70 ml-2">
+              {expanded ? '▲' : '▼'}
+            </span>
+          )}
         </div>
       </div>
 
