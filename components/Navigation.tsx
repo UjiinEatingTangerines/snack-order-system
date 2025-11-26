@@ -1,20 +1,52 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
 export default function Navigation() {
   const pathname = usePathname()
+  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  const links = [
-    { href: '/', label: '간식 허브' },
-    { href: '/snacks', label: '간식 목록' },
-    { href: '/propose', label: '간식 제안' },
-    { href: '/orders', label: '주문 이력' },
-    { href: '/orders/new', label: '주문하기' },
+  useEffect(() => {
+    checkAdminStatus()
+  }, [])
+
+  const checkAdminStatus = async () => {
+    try {
+      const response = await fetch('/api/auth/check')
+      const data = await response.json()
+      setIsAdmin(data.isAdmin)
+    } catch (error) {
+      console.error('권한 확인 오류:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      setIsAdmin(false)
+      router.push('/')
+      router.refresh()
+    } catch (error) {
+      console.error('로그아웃 오류:', error)
+    }
+  }
+
+  const allLinks = [
+    { href: '/', label: '간식 허브', adminOnly: false },
+    { href: '/snacks', label: '간식 목록', adminOnly: true },
+    { href: '/propose', label: '간식 제안', adminOnly: true },
+    { href: '/orders', label: '주문 이력', adminOnly: true },
+    { href: '/orders/new', label: '주문하기', adminOnly: true },
   ]
+
+  const links = allLinks.filter(link => !link.adminOnly || isAdmin)
 
   return (
     <nav className="bg-white shadow-sm border-b">
@@ -45,6 +77,24 @@ export default function Navigation() {
                 {link.label}
               </Link>
             ))}
+
+            {!loading && (
+              isAdmin ? (
+                <button
+                  onClick={handleLogout}
+                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-red-100 hover:text-red-700 transition-colors"
+                >
+                  로그아웃
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-green-100 hover:text-green-700 transition-colors"
+                >
+                  관리자
+                </Link>
+              )
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -85,6 +135,28 @@ export default function Navigation() {
                   {link.label}
                 </Link>
               ))}
+
+              {!loading && (
+                isAdmin ? (
+                  <button
+                    onClick={() => {
+                      handleLogout()
+                      setMobileMenuOpen(false)
+                    }}
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-red-100 hover:text-red-700 transition-colors text-left"
+                  >
+                    로그아웃
+                  </button>
+                ) : (
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-green-100 hover:text-green-700 transition-colors"
+                  >
+                    관리자
+                  </Link>
+                )
+              )}
             </div>
           </div>
         )}
