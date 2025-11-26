@@ -69,7 +69,7 @@ export default async function Home() {
     orderBy: {
       rank: 'asc'
     },
-    take: 5
+    take: 10
   })
 
   // 카테고리별 분포
