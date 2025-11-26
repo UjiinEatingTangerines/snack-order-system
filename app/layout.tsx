@@ -5,6 +5,13 @@ import Navigation from '@/components/Navigation'
 export const metadata: Metadata = {
   title: '간식 주문 시스템',
   description: '회사 간식 주문을 쉽고 재미있게',
+  icons: {
+    icon: [
+      {
+        url: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍪</text></svg>',
+      }
+    ]
+  }
 }
 
 export default function RootLayout({
