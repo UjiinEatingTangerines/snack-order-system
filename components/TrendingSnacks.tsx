@@ -69,16 +69,22 @@ export default function TrendingSnacks({ initialSnacks }: { initialSnacks: Trend
               key={snack.id}
               className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors"
             >
-              <span className="text-sm font-bold text-orange-600 w-6">
+              <span className="text-sm font-bold text-orange-600 w-6 flex-shrink-0">
                 #{snack.rank}
               </span>
-              {snack.imageUrl && (
-                <img
-                  src={snack.imageUrl}
-                  alt={snack.name}
-                  className="w-12 h-12 object-cover rounded"
-                />
-              )}
+              <div className="w-12 h-12 flex-shrink-0">
+                {snack.imageUrl ? (
+                  <img
+                    src={snack.imageUrl}
+                    alt={snack.name}
+                    className="w-full h-full object-cover rounded"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-100 rounded flex items-center justify-center text-2xl">
+                    🍪
+                  </div>
+                )}
+              </div>
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-gray-900 text-sm truncate">
                   {snack.name}
