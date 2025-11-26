@@ -18,6 +18,7 @@ type DashboardData = {
     createdAt: Date
     _count: { votes: number }
   }>
+  weeklyProposedSnacksCount: number
   topCategory: string
   topSnacks: Array<{
     id: string
@@ -58,6 +59,8 @@ type DashboardData = {
 export default function Home() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [weeklySnacksPage, setWeeklySnacksPage] = useState(1)
+  const ITEMS_PER_PAGE = 5
 
   const fetchDashboardData = async () => {
     try {
@@ -159,50 +162,84 @@ export default function Home() {
 
       {/* 이번 주 조르기 목록 */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-          <span>📝</span>
-          이번 주 조르기 목록
+        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span>📝</span>
+            이번 주 조르기 목록
+          </div>
+          {data.weeklyProposedSnacksCount > 0 && (
+            <span className="text-sm text-gray-500">
+              총 {data.weeklyProposedSnacksCount}개
+            </span>
+          )}
         </h2>
         {data.weeklyProposedSnacks.length === 0 ? (
           <div className="text-center py-8 bg-gray-50 rounded-lg">
             <p className="text-gray-500">이번 주에 조른 간식이 없습니다.</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {data.weeklyProposedSnacks.map((snack) => (
-              <div
-                key={snack.id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium text-gray-900">{snack.name}</p>
-                    {snack.category && (
-                      <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">
-                        {snack.category}
+          <>
+            <div className="space-y-3">
+              {data.weeklyProposedSnacks
+                .slice((weeklySnacksPage - 1) * ITEMS_PER_PAGE, weeklySnacksPage * ITEMS_PER_PAGE)
+                .map((snack) => (
+                  <div
+                    key={snack.id}
+                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-gray-900">{snack.name}</p>
+                        {snack.category && (
+                          <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">
+                            {snack.category}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3 mt-1">
+                        {snack.proposedBy && (
+                          <span className="text-xs text-gray-500">
+                            by {snack.proposedBy}
+                          </span>
+                        )}
+                        <span className="text-xs text-gray-400">
+                          {getTimeAgo(snack.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">👍</span>
+                      <span className="font-semibold text-primary-600">
+                        {snack._count.votes}
                       </span>
-                    )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 mt-1">
-                    {snack.proposedBy && (
-                      <span className="text-xs text-gray-500">
-                        by {snack.proposedBy}
-                      </span>
-                    )}
-                    <span className="text-xs text-gray-400">
-                      {getTimeAgo(snack.createdAt)}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">👍</span>
-                  <span className="font-semibold text-primary-600">
-                    {snack._count.votes}
-                  </span>
-                </div>
+                ))}
+            </div>
+
+            {/* 페이징 버튼 */}
+            {data.weeklyProposedSnacksCount > ITEMS_PER_PAGE && (
+              <div className="flex items-center justify-center gap-2 mt-4">
+                <button
+                  onClick={() => setWeeklySnacksPage(prev => Math.max(1, prev - 1))}
+                  disabled={weeklySnacksPage === 1}
+                  className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  이전
+                </button>
+                <span className="text-sm text-gray-600">
+                  {weeklySnacksPage} / {Math.ceil(data.weeklyProposedSnacksCount / ITEMS_PER_PAGE)}
+                </span>
+                <button
+                  onClick={() => setWeeklySnacksPage(prev => Math.min(Math.ceil(data.weeklyProposedSnacksCount / ITEMS_PER_PAGE), prev + 1))}
+                  disabled={weeklySnacksPage >= Math.ceil(data.weeklyProposedSnacksCount / ITEMS_PER_PAGE)}
+                  className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  다음
+                </button>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
 

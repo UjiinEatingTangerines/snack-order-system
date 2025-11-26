@@ -33,6 +33,10 @@ export async function GET() {
       }
     })
 
+    const weeklyProposedSnacksCount = await prisma.snack.count({
+      where: { createdAt: { gte: oneWeekAgo } }
+    })
+
     // 투표 수 기준 상위 5개 간식 조회
     const topSnacks = await prisma.snack.findMany({
       include: {
@@ -147,6 +151,7 @@ export async function GET() {
       weeklySnacks,
       weeklyVotes,
       weeklyProposedSnacks,
+      weeklyProposedSnacksCount,
       topCategory,
       topSnacks,
       allTimeTopSnacks,
