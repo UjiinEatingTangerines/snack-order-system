@@ -3,6 +3,7 @@ import './globals.css'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import WeeklyOrderBanner from '@/components/WeeklyOrderBanner'
+import FloatingMySnacksButton from '@/components/FloatingMySnacksButton'
 
 export const metadata: Metadata = {
   title: 'YUM.GG',
@@ -37,6 +38,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <FloatingMySnacksButton />
       </body>
     </html>
   )

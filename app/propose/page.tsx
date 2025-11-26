@@ -114,7 +114,7 @@ export default function ProposePage() {
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
-        간식 제안하기
+        간식 조르기
       </h1>
 
       {/* 네이버 검색 */}
@@ -287,7 +287,7 @@ export default function ProposePage() {
               disabled={loading}
               className="flex-1 bg-primary-600 text-white py-2 px-4 rounded-md hover:bg-primary-700 disabled:bg-gray-400 transition-colors"
             >
-              {loading ? '제안 중...' : '간식 제안하기'}
+              {loading ? '조르는 중...' : '간식 조르기'}
             </button>
             <button
               type="button"
