@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 간식 정보
+model Snack {
+  id          String      @id @default(cuid())
+  name        String
+  url         String      // 구매 링크
+  imageUrl    String?
+  category    String?
+  proposedBy  String?     // 제안자
+  createdAt   DateTime    @default(now())
+  votes       Vote[]
+  orderItems  OrderItem[]
+}
+
+// 투표
+model Vote {
+  id        String   @id @default(cuid())
+  snackId   String
+  snack     Snack    @relation(fields: [snackId], references: [id], onDelete: Cascade)
+  voterName String?  // 익명 가능
+  createdAt DateTime @default(now())
+
+  @@index([snackId])
+}
+
+// 주문
+model Order {
+  id        String      @id @default(cuid())
+  orderDate DateTime    @default(now())
+  totalCost Float?
+  notes     String?
+  items     OrderItem[]
+}
+
+// 주문 항목
+model OrderItem {
+  id       String @id @default(cuid())
+  orderId  String
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  snackId  String
+  snack    Snack  @relation(fields: [snackId], references: [id])
+  quantity Int    @default(1)
+
+  @@index([orderId])
+  @@index([snackId])
+}
+
+// 트렌딩 간식 (외부 API)
+model TrendingSnack {
+  id        String   @id @default(cuid())
+  name      String
+  url       String
+  imageUrl  String?
+  source    String   // "naver", "instagram"
+  rank      Int
+  fetchedAt DateTime @default(now())
+
+  @@index([source, fetchedAt])
+}
