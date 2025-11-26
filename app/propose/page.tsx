@@ -3,10 +3,24 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
+type SearchResult = {
+  title: string
+  link: string
+  image: string
+  lprice: string
+  category: string
+  brand: string
+  maker: string
+}
+
 export default function ProposePage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [userName, setUserName] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searching, setSearching] = useState(false)
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [showSearch, setShowSearch] = useState(true)
   const [formData, setFormData] = useState({
     name: '',
     url: '',
@@ -23,6 +37,39 @@ export default function ProposePage() {
       setFormData(prev => ({ ...prev, proposedBy: savedName }))
     }
   }, [])
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!searchQuery.trim()) return
+
+    setSearching(true)
+    try {
+      const response = await fetch(`/api/search-snacks?query=${encodeURIComponent(searchQuery)}`)
+      if (response.ok) {
+        const data = await response.json()
+        setSearchResults(data.items)
+      } else {
+        alert('검색 중 오류가 발생했습니다.')
+      }
+    } catch (error) {
+      alert('검색 중 오류가 발생했습니다.')
+    } finally {
+      setSearching(false)
+    }
+  }
+
+  const selectSearchResult = (item: SearchResult) => {
+    setFormData({
+      ...formData,
+      name: item.title,
+      url: item.link,
+      imageUrl: item.image,
+      category: item.category || item.brand || '기타',
+    })
+    setShowSearch(false)
+    setSearchResults([])
+    setSearchQuery('')
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -69,6 +116,85 @@ export default function ProposePage() {
       <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
         간식 제안하기
       </h1>
+
+      {/* 네이버 검색 */}
+      {showSearch && (
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-lg shadow p-4 sm:p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <span className="text-2xl">🔍</span>
+            네이버 쇼핑에서 검색
+          </h2>
+          <form onSubmit={handleSearch} className="flex gap-2 mb-4">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="간식 이름을 검색하세요 (예: 허니버터칩)"
+            />
+            <button
+              type="submit"
+              disabled={searching}
+              className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:opacity-50"
+            >
+              {searching ? '검색 중...' : '검색'}
+            </button>
+          </form>
+
+          {searchResults.length > 0 && (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {searchResults.map((item, index) => (
+                <div
+                  key={index}
+                  onClick={() => selectSearchResult(item)}
+                  className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-green-500 hover:shadow-md cursor-pointer transition-all"
+                >
+                  {item.image && (
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 truncate">{item.title}</p>
+                    {item.lprice && (
+                      <p className="text-sm text-green-600 font-semibold">
+                        {parseInt(item.lprice).toLocaleString()}원
+                      </p>
+                    )}
+                    {item.brand && (
+                      <p className="text-xs text-gray-500">{item.brand}</p>
+                    )}
+                  </div>
+                  <button className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded hover:bg-green-200">
+                    선택
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setShowSearch(false)}
+            className="mt-4 text-sm text-gray-600 hover:text-gray-800"
+          >
+            직접 입력하기 →
+          </button>
+        </div>
+      )}
+
+      {!showSearch && (
+        <button
+          type="button"
+          onClick={() => setShowSearch(true)}
+          className="mb-4 text-sm text-green-600 hover:text-green-700 flex items-center gap-1"
+        >
+          <span>🔍</span>
+          네이버 쇼핑에서 검색하기
+        </button>
+      )}
 
       <div className="bg-white rounded-lg shadow p-4 sm:p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
