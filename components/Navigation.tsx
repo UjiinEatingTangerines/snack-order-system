@@ -16,6 +16,11 @@ export default function Navigation() {
   const [loggingOut, setLoggingOut] = useState(false)
 
   useEffect(() => {
+    // 간식 목록 페이지는 어드민 체크 불필요
+    if (pathname === '/snacks') {
+      setLoading(false)
+      return
+    }
     checkAdminStatus()
   }, [pathname]) // pathname이 변경될 때마다 권한 재확인
 
