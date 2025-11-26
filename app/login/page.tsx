@@ -2,12 +2,14 @@
 
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Toast from '@/components/Toast'
 
 function LoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [showToast, setShowToast] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect') || '/'
@@ -27,8 +29,12 @@ function LoginForm() {
       const data = await response.json()
 
       if (response.ok) {
-        router.push(redirect)
-        router.refresh()
+        // 로그인 성공 토스트 표시
+        setShowToast(true)
+        // 1초 후 페이지 이동
+        setTimeout(() => {
+          window.location.href = redirect
+        }, 1000)
       } else {
         setError(data.error || '로그인에 실패했습니다.')
       }
@@ -109,6 +115,14 @@ function LoginForm() {
           </a>
         </div>
       </div>
+
+      {showToast && (
+        <Toast
+          message="로그인 성공! 환영합니다 🎉"
+          type="success"
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   )
 }

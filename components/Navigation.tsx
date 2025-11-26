@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
+import Toast from './Toast'
 
 export default function Navigation() {
   const pathname = usePathname()
@@ -10,10 +11,11 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [showToast, setShowToast] = useState(false)
 
   useEffect(() => {
     checkAdminStatus()
-  }, [])
+  }, [pathname]) // pathname이 변경될 때마다 권한 재확인
 
   const checkAdminStatus = async () => {
     try {
@@ -31,8 +33,11 @@ export default function Navigation() {
     try {
       await fetch('/api/auth/logout', { method: 'POST' })
       setIsAdmin(false)
-      router.push('/')
-      router.refresh()
+      setShowToast(true)
+      // 1초 후 페이지 새로고침
+      setTimeout(() => {
+        window.location.href = '/'
+      }, 1000)
     } catch (error) {
       console.error('로그아웃 오류:', error)
     }
@@ -161,6 +166,14 @@ export default function Navigation() {
           </div>
         )}
       </div>
+
+      {showToast && (
+        <Toast
+          message="로그아웃되었습니다 👋"
+          type="info"
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </nav>
   )
 }

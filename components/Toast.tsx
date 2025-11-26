@@ -1,0 +1,41 @@
+'use client'
+
+import { useEffect } from 'react'
+
+type ToastProps = {
+  message: string
+  type?: 'success' | 'error' | 'info'
+  onClose: () => void
+  duration?: number
+}
+
+export default function Toast({ message, type = 'success', onClose, duration = 3000 }: ToastProps) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose()
+    }, duration)
+
+    return () => clearTimeout(timer)
+  }, [duration, onClose])
+
+  const bgColor = {
+    success: 'bg-green-500',
+    error: 'bg-red-500',
+    info: 'bg-blue-500'
+  }[type]
+
+  const icon = {
+    success: '✓',
+    error: '✕',
+    info: 'ℹ'
+  }[type]
+
+  return (
+    <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-5 fade-in duration-300">
+      <div className={`${bgColor} bg-opacity-95 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 min-w-[300px]`}>
+        <span className="text-xl font-bold">{icon}</span>
+        <span className="font-medium">{message}</span>
+      </div>
+    </div>
+  )
+}
