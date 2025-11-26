@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
     const snacks = await prisma.snack.findMany({
       where: {
-        proposer: proposer
+        proposedBy: proposer
       },
       include: {
         _count: {
