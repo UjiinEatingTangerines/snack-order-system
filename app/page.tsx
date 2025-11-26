@@ -169,33 +169,33 @@ export default async function Home() {
 
       {/* 전체 통계 카드 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg shadow-md p-6 border border-primary-200">
+        <div className="bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-primary-700 font-medium">총 간식 수</p>
-              <p className="text-3xl font-bold text-primary-900 mt-2">{totalSnacks}개</p>
+              <p className="text-sm text-primary-100 font-medium">총 간식 수</p>
+              <p className="text-4xl font-bold text-white mt-2">{totalSnacks}개</p>
             </div>
-            <div className="text-4xl">🍪</div>
+            <div className="text-5xl opacity-80">🍪</div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-accent-50 to-accent-100 rounded-lg shadow-md p-6 border border-accent-200">
+        <div className="bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-accent-700 font-medium">총 투표 수</p>
-              <p className="text-3xl font-bold text-accent-900 mt-2">{totalVotes}표</p>
+              <p className="text-sm text-accent-100 font-medium">총 투표 수</p>
+              <p className="text-4xl font-bold text-white mt-2">{totalVotes}표</p>
             </div>
-            <div className="text-4xl">👍</div>
+            <div className="text-5xl opacity-80">👍</div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-cream-100 to-cream-200 rounded-lg shadow-md p-6 border border-cream-300">
+        <div className="bg-gradient-to-br from-cream-500 to-cream-600 rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-cream-800 font-medium">총 주문 횟수</p>
-              <p className="text-3xl font-bold text-cream-900 mt-2">{totalOrders}회</p>
+              <p className="text-sm text-cream-100 font-medium">총 주문 횟수</p>
+              <p className="text-4xl font-bold text-white mt-2">{totalOrders}회</p>
             </div>
-            <div className="text-4xl">📦</div>
+            <div className="text-5xl opacity-80">📦</div>
           </div>
         </div>
       </div>
