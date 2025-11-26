@@ -166,7 +166,7 @@ export default function ErrorDisplay({
   }, [])
 
   return (
-    <div className="min-h-[400px] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] bg-cream-50 flex items-center justify-center p-4">
       <div className={`max-w-md w-full ${template.color} border-2 rounded-2xl p-8 text-center shadow-lg`}>
         <div className="text-8xl mb-4">{template.emoji}</div>
         <h2 className="text-2xl font-bold text-gray-800 mb-3">
