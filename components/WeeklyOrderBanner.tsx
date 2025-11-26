@@ -17,7 +17,7 @@ export default async function WeeklyOrderBanner() {
   // 이번 주에 생성된 주문 조회
   const weeklyOrders = await prisma.order.findMany({
     where: {
-      createdAt: {
+      orderDate: {
         gte: thisWeekMonday
       }
     }
