@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { apiError } from '@/lib/api-errors'
 
 // GET: 모든 주문 조회
 export async function GET() {
@@ -19,10 +20,7 @@ export async function GET() {
 
     return NextResponse.json(orders)
   } catch (error) {
-    return NextResponse.json(
-      { message: '주문 목록을 불러오는데 실패했습니다.' },
-      { status: 500 }
-    )
+    return apiError(500, '주문 목록 조회 실패')
   }
 }
 
@@ -34,10 +32,7 @@ export async function POST(request: Request) {
 
     // 필수 필드 검증
     if (!items || items.length === 0) {
-      return NextResponse.json(
-        { message: '주문할 간식을 선택해주세요.' },
-        { status: 400 }
-      )
+      return apiError(400, '주문할 간식을 선택해주세요')
     }
 
     // 주문 생성 (트랜잭션 사용)
@@ -64,9 +59,6 @@ export async function POST(request: Request) {
     return NextResponse.json(order, { status: 201 })
   } catch (error) {
     console.error('주문 생성 오류:', error)
-    return NextResponse.json(
-      { message: '주문 생성 중 오류가 발생했습니다.' },
-      { status: 500 }
-    )
+    return apiError(500, '주문 생성 실패')
   }
 }

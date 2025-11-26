@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { apiError } from '@/lib/api-errors'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,18 +23,12 @@ export async function GET(
     })
 
     if (!order) {
-      return NextResponse.json(
-        { message: '주문을 찾을 수 없습니다.' },
-        { status: 404 }
-      )
+      return apiError(404, '주문을 찾을 수 없습니다')
     }
 
     return NextResponse.json(order)
   } catch (error) {
     console.error('주문 조회 오류:', error)
-    return NextResponse.json(
-      { message: '주문 조회 중 오류가 발생했습니다.' },
-      { status: 500 }
-    )
+    return apiError(500, '주문 조회 실패')
   }
 }

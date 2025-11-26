@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { apiError } from '@/lib/api-errors'
 
 // GET: 모든 간식 조회
 export async function GET() {
@@ -18,10 +19,7 @@ export async function GET() {
 
     return NextResponse.json(snacks)
   } catch (error) {
-    return NextResponse.json(
-      { message: '간식 목록을 불러오는데 실패했습니다.' },
-      { status: 500 }
-    )
+    return apiError(500, '간식 목록 조회 실패')
   }
 }
 
@@ -33,10 +31,7 @@ export async function POST(request: Request) {
 
     // 필수 필드 검증
     if (!name || !url) {
-      return NextResponse.json(
-        { message: '간식 이름과 구매 링크는 필수입니다.' },
-        { status: 400 }
-      )
+      return apiError(400, '간식 이름과 구매 링크는 필수입니다')
     }
 
     // 간식 생성
@@ -53,9 +48,6 @@ export async function POST(request: Request) {
     return NextResponse.json(snack, { status: 201 })
   } catch (error) {
     console.error('간식 생성 오류:', error)
-    return NextResponse.json(
-      { message: '간식 제안 중 오류가 발생했습니다.' },
-      { status: 500 }
-    )
+    return apiError(500, '간식 제안 실패')
   }
 }

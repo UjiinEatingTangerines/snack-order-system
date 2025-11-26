@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { apiError } from '@/lib/api-errors'
 
 // GET: 트렌딩 간식 조회
 export async function GET() {
@@ -23,10 +24,7 @@ export async function GET() {
     return NextResponse.json(trending)
   } catch (error) {
     console.error('트렌딩 데이터 조회 오류:', error)
-    return NextResponse.json(
-      { message: '트렌딩 데이터를 불러오는데 실패했습니다.' },
-      { status: 500 }
-    )
+    return apiError(500, '트렌딩 데이터 조회 실패')
   }
 }
 
@@ -37,10 +35,7 @@ export async function POST() {
     const clientSecret = process.env.NAVER_CLIENT_SECRET
 
     if (!clientId || !clientSecret) {
-      return NextResponse.json(
-        { message: '네이버 API 키가 설정되지 않았습니다.' },
-        { status: 500 }
-      )
+      return apiError(500, '네이버 API 키 미설정')
     }
 
     // 검색 키워드
@@ -97,9 +92,6 @@ export async function POST() {
     })
   } catch (error) {
     console.error('트렌딩 업데이트 오류:', error)
-    return NextResponse.json(
-      { message: '트렌딩 데이터 업데이트 중 오류가 발생했습니다.' },
-      { status: 500 }
-    )
+    return apiError(500, '트렌딩 데이터 업데이트 실패')
   }
 }

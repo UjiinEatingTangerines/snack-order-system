@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { apiError } from '@/lib/api-errors'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,10 +28,7 @@ export async function POST(
     return NextResponse.json({ vote, voteCount })
   } catch (error) {
     console.error('투표 오류:', error)
-    return NextResponse.json(
-      { message: '투표 중 오류가 발생했습니다.' },
-      { status: 500 }
-    )
+    return apiError(500, '투표 실패')
   }
 }
 
@@ -53,10 +51,7 @@ export async function DELETE(
     })
 
     if (!vote) {
-      return NextResponse.json(
-        { message: '투표를 찾을 수 없습니다.' },
-        { status: 404 }
-      )
+      return apiError(404, '투표를 찾을 수 없습니다')
     }
 
     await prisma.vote.delete({
@@ -71,9 +66,6 @@ export async function DELETE(
     return NextResponse.json({ voteCount })
   } catch (error) {
     console.error('투표 취소 오류:', error)
-    return NextResponse.json(
-      { message: '투표 취소 중 오류가 발생했습니다.' },
-      { status: 500 }
-    )
+    return apiError(500, '투표 취소 실패')
   }
 }
