@@ -1,24 +1,27 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
     const { voterName } = await request.json()
+    const { id } = params
 
     // 투표 생성
     const vote = await prisma.vote.create({
       data: {
-        snackId: params.id,
+        snackId: id,
         voterName: voterName || null,
       }
     })
 
     // 업데이트된 투표 수 조회
     const voteCount = await prisma.vote.count({
-      where: { snackId: params.id }
+      where: { snackId: id }
     })
 
     return NextResponse.json({ vote, voteCount })
@@ -38,11 +41,12 @@ export async function DELETE(
 ) {
   try {
     const { voterName } = await request.json()
+    const { id } = params
 
     // 가장 최근 투표 찾아서 삭제
     const vote = await prisma.vote.findFirst({
       where: {
-        snackId: params.id,
+        snackId: id,
         voterName: voterName || null,
       },
       orderBy: { createdAt: 'desc' }
@@ -61,7 +65,7 @@ export async function DELETE(
 
     // 업데이트된 투표 수 조회
     const voteCount = await prisma.vote.count({
-      where: { snackId: params.id }
+      where: { snackId: id }
     })
 
     return NextResponse.json({ voteCount })

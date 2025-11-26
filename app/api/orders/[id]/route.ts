@@ -1,14 +1,17 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 // GET: 특정 주문 조회
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
+    const { id } = params
     const order = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         items: {
           include: {
