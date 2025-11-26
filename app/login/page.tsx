@@ -3,6 +3,7 @@
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Toast from '@/components/Toast'
+import LoadingOverlay from '@/components/LoadingOverlay'
 
 function LoginForm() {
   const [password, setPassword] = useState('')
@@ -10,6 +11,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showToast, setShowToast] = useState(false)
+  const [redirecting, setRedirecting] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect') || '/'
@@ -31,6 +33,7 @@ function LoginForm() {
       if (response.ok) {
         // 로그인 성공 토스트 표시
         setShowToast(true)
+        setRedirecting(true)
         // 1초 후 페이지 이동
         setTimeout(() => {
           window.location.href = redirect
@@ -123,6 +126,8 @@ function LoginForm() {
           onClose={() => setShowToast(false)}
         />
       )}
+
+      {redirecting && <LoadingOverlay message="로그인 중..." />}
     </div>
   )
 }

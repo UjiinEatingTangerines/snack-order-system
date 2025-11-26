@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import Toast from './Toast'
+import LoadingOverlay from './LoadingOverlay'
 
 export default function Navigation() {
   const pathname = usePathname()
@@ -12,6 +13,7 @@ export default function Navigation() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
   const [showToast, setShowToast] = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
 
   useEffect(() => {
     checkAdminStatus()
@@ -34,12 +36,14 @@ export default function Navigation() {
       await fetch('/api/auth/logout', { method: 'POST' })
       setIsAdmin(false)
       setShowToast(true)
+      setLoggingOut(true)
       // 1초 후 페이지 새로고침
       setTimeout(() => {
         window.location.href = '/'
       }, 1000)
     } catch (error) {
       console.error('로그아웃 오류:', error)
+      setLoggingOut(false)
     }
   }
 
@@ -174,6 +178,8 @@ export default function Navigation() {
           onClose={() => setShowToast(false)}
         />
       )}
+
+      {loggingOut && <LoadingOverlay message="로그아웃 중..." />}
     </nav>
   )
 }
