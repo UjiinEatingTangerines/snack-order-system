@@ -1,21 +1,56 @@
-import { prisma } from '@/lib/prisma'
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
-export const dynamic = 'force-dynamic'
-
-export default async function OrdersPage() {
-  const orders = await prisma.order.findMany({
-    include: {
-      items: {
-        include: {
-          snack: true
-        }
-      }
-    },
-    orderBy: {
-      orderDate: 'desc'
+type Order = {
+  id: string
+  orderDate: Date
+  totalCost: number | null
+  notes: string | null
+  items: {
+    id: string
+    quantity: number
+    snack: {
+      id: string
+      name: string
+      url: string
+      imageUrl: string | null
     }
-  })
+  }[]
+}
+
+export default function OrdersPage() {
+  const [orders, setOrders] = useState<Order[]>([])
+  const [loading, setLoading] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => {
+    checkAdminStatus()
+    fetchOrders()
+  }, [])
+
+  const checkAdminStatus = async () => {
+    try {
+      const response = await fetch('/api/auth/check')
+      const data = await response.json()
+      setIsAdmin(data.isAdmin)
+    } catch (error) {
+      console.error('권한 확인 오류:', error)
+    }
+  }
+
+  const fetchOrders = async () => {
+    try {
+      const response = await fetch('/api/orders')
+      const data = await response.json()
+      setOrders(data)
+    } catch (error) {
+      console.error('주문 조회 오류:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('ko-KR', {
@@ -26,18 +61,28 @@ export default async function OrdersPage() {
     })
   }
 
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">로딩 중...</p>
+      </div>
+    )
+  }
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
           주문 이력
         </h1>
-        <Link
-          href="/orders/new"
-          className="w-full sm:w-auto text-center bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 transition-colors whitespace-nowrap"
-        >
-          + 새 주문 만들기
-        </Link>
+        {isAdmin && (
+          <Link
+            href="/orders/new"
+            className="w-full sm:w-auto text-center bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 transition-colors whitespace-nowrap"
+          >
+            + 새 주문 만들기
+          </Link>
+        )}
       </div>
 
       {orders.length === 0 ? (
@@ -45,12 +90,14 @@ export default async function OrdersPage() {
           <p className="text-gray-500 text-lg mb-4">
             아직 주문 이력이 없습니다.
           </p>
-          <Link
-            href="/orders/new"
-            className="inline-block bg-primary-600 text-white px-6 py-3 rounded-md hover:bg-primary-700 transition-colors"
-          >
-            첫 주문 만들기
-          </Link>
+          {isAdmin && (
+            <Link
+              href="/orders/new"
+              className="inline-block bg-primary-600 text-white px-6 py-3 rounded-md hover:bg-primary-700 transition-colors"
+            >
+              첫 주문 만들기
+            </Link>
+          )}
         </div>
       ) : (
         <div className="space-y-6">
@@ -123,16 +170,18 @@ export default async function OrdersPage() {
                   </div>
                 </div>
 
-                {/* 재주문 버튼 */}
-                <div className="px-6 pb-4">
-                  <Link
-                    href={`/orders/new?reorder=${order.id}`}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
-                  >
-                    <span>🔄</span>
-                    이 주문 다시하기
-                  </Link>
-                </div>
+                {/* 재주문 버튼 - 관리자만 */}
+                {isAdmin && (
+                  <div className="px-6 pb-4">
+                    <Link
+                      href={`/orders/new?reorder=${order.id}`}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
+                    >
+                      <span>🔄</span>
+                      이 주문 다시하기
+                    </Link>
+                  </div>
+                )}
               </div>
             )
           })}
