@@ -1,35 +1,50 @@
-import { prisma } from '@/lib/prisma'
+'use client'
 
-export default async function WeeklyOrderBanner() {
-  // 이번 주 시작일 계산 (월요일 기준)
-  const getThisWeekMonday = () => {
-    const today = new Date()
-    const dayOfWeek = today.getDay()
-    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek // 일요일이면 -6, 아니면 월요일까지의 차이
-    const monday = new Date(today)
-    monday.setDate(today.getDate() + diff)
-    monday.setHours(0, 0, 0, 0)
-    return monday
+import { useState, useEffect } from 'react'
+
+export default function WeeklyOrderBanner() {
+  const [orderCount, setOrderCount] = useState(0)
+  const [totalCost, setTotalCost] = useState(0)
+  const [loading, setLoading] = useState(true)
+
+  const fetchWeeklyTotal = async () => {
+    try {
+      const response = await fetch('/api/weekly-total')
+      if (response.ok) {
+        const data = await response.json()
+        setOrderCount(data.orderCount)
+        setTotalCost(data.totalCost)
+      }
+    } catch (error) {
+      console.error('주간 주문 조회 실패:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const thisWeekMonday = getThisWeekMonday()
+  // 초기 로드
+  useEffect(() => {
+    fetchWeeklyTotal()
+  }, [])
 
-  // 이번 주에 생성된 주문 조회
-  const weeklyOrders = await prisma.order.findMany({
-    where: {
-      orderDate: {
-        gte: thisWeekMonday
-      }
-    }
-  })
+  // 30초마다 자동 새로고침
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchWeeklyTotal()
+    }, 30000) // 30초
 
-  // 총 금액 계산
-  const totalCost = weeklyOrders.reduce((sum, order) => {
-    return sum + (order.totalCost || 0)
-  }, 0)
+    return () => clearInterval(interval)
+  }, [])
 
-  // 주문 개수
-  const orderCount = weeklyOrders.length
+  if (loading) {
+    return (
+      <div className="bg-gradient-to-r from-primary-500 to-accent-500 text-white py-3 px-4 shadow-md">
+        <div className="max-w-7xl mx-auto flex items-center justify-center">
+          <span className="text-sm">불러오는 중...</span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-gradient-to-r from-primary-500 to-accent-500 text-white py-3 px-4 shadow-md">
