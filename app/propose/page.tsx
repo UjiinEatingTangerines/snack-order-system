@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function ProposePage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [userName, setUserName] = useState('')
   const [formData, setFormData] = useState({
     name: '',
     url: '',
@@ -14,20 +15,44 @@ export default function ProposePage() {
     proposedBy: '',
   })
 
+  useEffect(() => {
+    // localStorage에서 사용자 이름 가져오기
+    const savedName = localStorage.getItem('userName')
+    if (savedName) {
+      setUserName(savedName)
+      setFormData(prev => ({ ...prev, proposedBy: savedName }))
+    }
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // 제안자 이름 확인
+    let proposer = formData.proposedBy
+    if (!proposer) {
+      const name = prompt('이름을 입력해주세요:')
+      if (!name || !name.trim()) {
+        alert('이름을 입력해야 간식을 제안할 수 있습니다.')
+        return
+      }
+      proposer = name.trim()
+      localStorage.setItem('userName', proposer)
+      setUserName(proposer)
+      setFormData(prev => ({ ...prev, proposedBy: proposer }))
+    }
+
     setLoading(true)
 
     try {
       const response = await fetch('/api/snacks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, proposedBy: proposer }),
       })
 
       if (response.ok) {
         alert('간식이 제안되었습니다!')
-        router.push('/snacks')
+        router.push('/my-snacks')
       } else {
         const error = await response.json()
         alert(`오류: ${error.message}`)

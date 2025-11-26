@@ -49,6 +49,7 @@ export default function Navigation() {
 
   const allLinks = [
     { href: '/', label: '간식 허브', adminOnly: false },
+    { href: '/my-snacks', label: '내 제안', adminOnly: false },
     { href: '/snacks', label: '간식 목록', adminOnly: true },
     { href: '/propose', label: '간식 제안', adminOnly: true },
     { href: '/orders', label: '주문 이력', adminOnly: true },
@@ -87,22 +88,13 @@ export default function Navigation() {
               </Link>
             ))}
 
-            {!loading && (
-              isAdmin ? (
-                <button
-                  onClick={handleLogout}
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-red-100 hover:text-red-700 transition-colors"
-                >
-                  로그아웃
-                </button>
-              ) : (
-                <Link
-                  href="/login"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-green-100 hover:text-green-700 transition-colors"
-                >
-                  관리자
-                </Link>
-              )
+            {!loading && isAdmin && (
+              <button
+                onClick={handleLogout}
+                className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-red-100 hover:text-red-700 transition-colors"
+              >
+                로그아웃
+              </button>
             )}
           </div>
 
@@ -145,26 +137,16 @@ export default function Navigation() {
                 </Link>
               ))}
 
-              {!loading && (
-                isAdmin ? (
-                  <button
-                    onClick={() => {
-                      handleLogout()
-                      setMobileMenuOpen(false)
-                    }}
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-red-100 hover:text-red-700 transition-colors text-left"
-                  >
-                    로그아웃
-                  </button>
-                ) : (
-                  <Link
-                    href="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-green-100 hover:text-green-700 transition-colors"
-                  >
-                    관리자
-                  </Link>
-                )
+              {!loading && isAdmin && (
+                <button
+                  onClick={() => {
+                    handleLogout()
+                    setMobileMenuOpen(false)
+                  }}
+                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-red-100 hover:text-red-700 transition-colors text-left"
+                >
+                  로그아웃
+                </button>
               )}
             </div>
           </div>

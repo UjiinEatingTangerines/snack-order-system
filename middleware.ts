@@ -16,7 +16,7 @@ export function middleware(request: NextRequest) {
 
     // 세션이 없으면 로그인 페이지로 리다이렉트
     if (!session || session.value !== 'authenticated') {
-      const loginUrl = new URL('/login', request.url)
+      const loginUrl = new URL('/facker', request.url)
       loginUrl.searchParams.set('redirect', pathname)
       return NextResponse.redirect(loginUrl)
     }
