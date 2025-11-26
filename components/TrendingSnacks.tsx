@@ -15,34 +15,33 @@ const COOLDOWN_TIME = 5000 // 5초
 export default function TrendingSnacks({ initialSnacks }: { initialSnacks: TrendingSnack[] }) {
   const [snacks, setSnacks] = useState<TrendingSnack[]>(initialSnacks)
   const [loading, setLoading] = useState(false)
-  const [cooldown, setCooldown] = useState(0)
-  const [lastRefreshTime, setLastRefreshTime] = useState<number | null>(null)
+  const [remainingTime, setRemainingTime] = useState(0)
 
-  // 컴포넌트 마운트 시 localStorage에서 마지막 새로고침 시간 불러오기
+  // 남은 시간 계산 및 업데이트
   useEffect(() => {
-    const saved = localStorage.getItem('trendingSnacksLastRefresh')
-    if (saved) {
-      const savedTime = parseInt(saved, 10)
-      const elapsed = Date.now() - savedTime
-      if (elapsed < COOLDOWN_TIME) {
-        setCooldown(Math.ceil((COOLDOWN_TIME - elapsed) / 1000))
-        setLastRefreshTime(savedTime)
+    const updateRemainingTime = () => {
+      const saved = localStorage.getItem('trendingSnacksLastRefresh')
+      if (saved) {
+        const savedTime = parseInt(saved, 10)
+        const elapsed = Date.now() - savedTime
+        const remaining = Math.max(0, Math.ceil((COOLDOWN_TIME - elapsed) / 1000))
+        setRemainingTime(remaining)
+      } else {
+        setRemainingTime(0)
       }
     }
+
+    // 초기 로드 시 실행
+    updateRemainingTime()
+
+    // 1초마다 남은 시간 업데이트
+    const interval = setInterval(updateRemainingTime, 1000)
+
+    return () => clearInterval(interval)
   }, [])
 
-  // 쿨다운 타이머
-  useEffect(() => {
-    if (cooldown > 0) {
-      const timer = setTimeout(() => {
-        setCooldown(cooldown - 1)
-      }, 1000)
-      return () => clearTimeout(timer)
-    }
-  }, [cooldown])
-
   const handleRefresh = async () => {
-    if (cooldown > 0) return
+    if (remainingTime > 0) return
 
     setLoading(true)
 
@@ -60,8 +59,7 @@ export default function TrendingSnacks({ initialSnacks }: { initialSnacks: Trend
         // 새로고침 시간 저장 및 쿨다운 시작
         const now = Date.now()
         localStorage.setItem('trendingSnacksLastRefresh', now.toString())
-        setLastRefreshTime(now)
-        setCooldown(5) // 5초 쿨다운
+        setRemainingTime(5) // 5초 쿨다운
       } else {
         const error = await response.json()
         alert(`오류: ${error.message}`)
@@ -81,10 +79,10 @@ export default function TrendingSnacks({ initialSnacks }: { initialSnacks: Trend
         </h2>
         <button
           onClick={handleRefresh}
-          disabled={loading || cooldown > 0}
+          disabled={loading || remainingTime > 0}
           className="text-xs bg-primary-100 text-primary-700 px-3 py-1 rounded hover:bg-primary-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? '업데이트 중...' : cooldown > 0 ? `${cooldown}초 후 가능` : '새로고침'}
+          {loading ? '업데이트 중...' : remainingTime > 0 ? `${remainingTime}초 후 가능` : '새로고침'}
         </button>
       </div>
 
