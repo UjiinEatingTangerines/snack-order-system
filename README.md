@@ -68,7 +68,7 @@ ADMIN_PASSWORD="your-admin-password"
 SESSION_SECRET="your-secret-key-change-this-in-production"
 
 # 앱 버전
-NEXT_PUBLIC_APP_VERSION="0.5.0"
+NEXT_PUBLIC_APP_VERSION="0.6.0"
 NEXT_PUBLIC_BUILD_DATE="2025-11-26"
 ```
 
@@ -265,6 +265,11 @@ npm run lint
 ```
 
 ## 🆕 업데이트 내역
+
+### v0.6.0 (2025-11-26)
+- 🎈 플로팅 버튼 둥둥 떠다니는 애니메이션 추가
+- 📍 플로팅 버튼이 footer와 겹치지 않도록 자동 위치 조정
+- 🎨 플로팅 버튼 색상 변경 (오렌지-노랑 그라데이션)
 
 ### v0.5.0 (2025-11-26)
 - 🎒 "내 제안" 메뉴를 "내 간식 주머니"로 변경
