@@ -9,7 +9,7 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const links = [
-    { href: '/', label: '대시보드' },
+    { href: '/', label: '간식 허브' },
     { href: '/snacks', label: '간식 목록' },
     { href: '/propose', label: '간식 제안' },
     { href: '/orders', label: '주문 이력' },
