@@ -31,11 +31,6 @@ export default async function WeeklyOrderBanner() {
   // 주문 개수
   const orderCount = weeklyOrders.length
 
-  // 금액이 0이면 표시하지 않음
-  if (totalCost === 0 && orderCount === 0) {
-    return null
-  }
-
   return (
     <div className="bg-gradient-to-r from-primary-500 to-accent-500 text-white py-3 px-4 shadow-md">
       <div className="max-w-7xl mx-auto flex items-center justify-center gap-4 text-sm sm:text-base">
