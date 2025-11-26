@@ -163,7 +163,7 @@ export default async function Home() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
         대시보드
       </h1>
 

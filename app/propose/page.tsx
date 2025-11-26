@@ -41,11 +41,11 @@ export default function ProposePage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
         간식 제안하기
       </h1>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* 간식 이름 */}
           <div>
@@ -130,7 +130,7 @@ export default function ProposePage() {
           </div>
 
           {/* 버튼 */}
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <button
               type="submit"
               disabled={loading}
@@ -141,7 +141,7 @@ export default function ProposePage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className="sm:px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
