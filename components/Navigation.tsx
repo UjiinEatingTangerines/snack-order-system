@@ -23,8 +23,8 @@ export default function Navigation() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
-              <span className="text-2xl font-bold text-orange-600">🍪</span>
-              <span className="ml-2 text-lg sm:text-xl font-semibold text-gray-900">
+              <span className="text-2xl font-bold">🍪</span>
+              <span className="ml-2 text-lg sm:text-xl font-semibold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
                 간식 주문 시스템
               </span>
             </Link>
@@ -38,8 +38,8 @@ export default function Navigation() {
                 href={link.href}
                 className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
                   pathname === link.href
-                    ? 'bg-orange-100 text-orange-700'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'bg-primary-100 text-primary-700'
+                    : 'text-gray-600 hover:bg-cream-100 hover:text-gray-900'
                 }`}
               >
                 {link.label}
@@ -78,8 +78,8 @@ export default function Navigation() {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     pathname === link.href
-                      ? 'bg-orange-100 text-orange-700'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      ? 'bg-primary-100 text-primary-700'
+                      : 'text-gray-600 hover:bg-cream-100 hover:text-gray-900'
                   }`}
                 >
                   {link.label}

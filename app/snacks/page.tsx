@@ -23,7 +23,7 @@ export default async function SnacksPage() {
         </h1>
         <a
           href="/propose"
-          className="w-full sm:w-auto text-center bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition-colors whitespace-nowrap"
+          className="w-full sm:w-auto text-center bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 transition-colors whitespace-nowrap"
         >
           + 간식 제안하기
         </a>

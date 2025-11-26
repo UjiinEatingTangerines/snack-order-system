@@ -169,31 +169,31 @@ export default async function Home() {
 
       {/* 전체 통계 카드 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg shadow p-6 border border-orange-200">
+        <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg shadow-md p-6 border border-primary-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-orange-700 font-medium">총 간식 수</p>
-              <p className="text-3xl font-bold text-orange-900 mt-2">{totalSnacks}개</p>
+              <p className="text-sm text-primary-700 font-medium">총 간식 수</p>
+              <p className="text-3xl font-bold text-primary-900 mt-2">{totalSnacks}개</p>
             </div>
             <div className="text-4xl">🍪</div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg shadow p-6 border border-blue-200">
+        <div className="bg-gradient-to-br from-accent-50 to-accent-100 rounded-lg shadow-md p-6 border border-accent-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-blue-700 font-medium">총 투표 수</p>
-              <p className="text-3xl font-bold text-blue-900 mt-2">{totalVotes}표</p>
+              <p className="text-sm text-accent-700 font-medium">총 투표 수</p>
+              <p className="text-3xl font-bold text-accent-900 mt-2">{totalVotes}표</p>
             </div>
             <div className="text-4xl">👍</div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg shadow p-6 border border-green-200">
+        <div className="bg-gradient-to-br from-cream-100 to-cream-200 rounded-lg shadow-md p-6 border border-cream-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-green-700 font-medium">총 주문 횟수</p>
-              <p className="text-3xl font-bold text-green-900 mt-2">{totalOrders}회</p>
+              <p className="text-sm text-cream-800 font-medium">총 주문 횟수</p>
+              <p className="text-3xl font-bold text-cream-900 mt-2">{totalOrders}회</p>
             </div>
             <div className="text-4xl">📦</div>
           </div>
@@ -260,7 +260,7 @@ export default async function Home() {
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="text-lg">👍</span>
-                    <span className="font-semibold text-orange-600">
+                    <span className="font-semibold text-primary-600">
                       {snack._count.votes}
                     </span>
                   </div>
@@ -287,7 +287,7 @@ export default async function Home() {
           ) : (
             <div className="space-y-3">
               {allTimeTopSnacks.map((snack, index) => (
-                <div key={snack.id} className="flex items-center gap-3 p-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200">
+                <div key={snack.id} className="flex items-center gap-3 p-3 bg-gradient-to-r from-cream-100 to-primary-50 rounded-lg border border-cream-300">
                   <span className="text-2xl">
                     {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
                   </span>
@@ -321,7 +321,7 @@ export default async function Home() {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="bg-gradient-to-r from-orange-400 to-orange-600 h-2 rounded-full transition-all"
+                      className="bg-gradient-to-r from-primary-400 to-accent-600 h-2 rounded-full transition-all"
                       style={{ width: `${cat.percentage}%` }}
                     />
                   </div>
@@ -390,15 +390,15 @@ export default async function Home() {
       </div>
 
       {/* Quick Actions */}
-      <div className="mt-6 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-orange-900 mb-4 flex items-center gap-2">
+      <div className="mt-6 bg-gradient-to-r from-cream-100 to-primary-50 border border-primary-200 rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-primary-900 mb-4 flex items-center gap-2">
           <span>⚡</span>
           빠른 작업
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <a
             href="/snacks"
-            className="flex items-center gap-3 p-4 bg-white rounded-lg border-2 border-orange-300 hover:border-orange-500 hover:shadow-md transition-all"
+            className="flex items-center gap-3 p-4 bg-white rounded-lg border-2 border-primary-300 hover:border-primary-500 hover:shadow-md transition-all"
           >
             <span className="text-3xl">🎯</span>
             <div>
@@ -409,7 +409,7 @@ export default async function Home() {
 
           <a
             href="/propose"
-            className="flex items-center gap-3 p-4 bg-white rounded-lg border-2 border-orange-300 hover:border-orange-500 hover:shadow-md transition-all"
+            className="flex items-center gap-3 p-4 bg-white rounded-lg border-2 border-primary-300 hover:border-primary-500 hover:shadow-md transition-all"
           >
             <span className="text-3xl">📝</span>
             <div>
@@ -420,7 +420,7 @@ export default async function Home() {
 
           <a
             href="/orders/new"
-            className="flex items-center gap-3 p-4 bg-white rounded-lg border-2 border-orange-300 hover:border-orange-500 hover:shadow-md transition-all"
+            className="flex items-center gap-3 p-4 bg-white rounded-lg border-2 border-primary-300 hover:border-primary-500 hover:shadow-md transition-all"
           >
             <span className="text-3xl">📦</span>
             <div>

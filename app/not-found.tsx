@@ -51,7 +51,7 @@ export default function NotFound() {
         <div className="flex flex-col gap-2">
           <button
             onClick={() => window.history.back()}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
             이전 페이지로
           </button>

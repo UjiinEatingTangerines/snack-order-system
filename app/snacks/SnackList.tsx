@@ -64,7 +64,7 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
           onClick={() => setFilter('all')}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
             filter === 'all'
-              ? 'bg-orange-600 text-white'
+              ? 'bg-primary-600 text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
@@ -76,7 +76,7 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
             onClick={() => setFilter(cat!)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               filter === cat
-                ? 'bg-orange-600 text-white'
+                ? 'bg-primary-600 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
           >
@@ -93,7 +93,7 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
           </p>
           <a
             href="/propose"
-            className="inline-block bg-orange-600 text-white px-6 py-3 rounded-md hover:bg-orange-700 transition-colors"
+            className="inline-block bg-primary-600 text-white px-6 py-3 rounded-md hover:bg-primary-700 transition-colors"
           >
             첫 간식 제안하기
           </a>
@@ -127,7 +127,7 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
                     {snack.name}
                   </h3>
                   {snack.category && (
-                    <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">
+                    <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
                       {snack.category}
                     </span>
                   )}
@@ -143,7 +143,7 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
                   <button
                     onClick={() => handleVote(snack.id)}
                     disabled={votingSnackId === snack.id}
-                    className="flex items-center gap-2 px-3 py-2 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-md transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-3 py-2 bg-orange-50 hover:bg-primary-100 text-primary-700 rounded-md transition-colors disabled:opacity-50"
                   >
                     <span className="text-xl">👍</span>
                     <span className="text-sm font-medium">
@@ -155,7 +155,7 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
                     href={snack.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-orange-600 hover:text-orange-700 font-medium flex-1 text-right"
+                    className="text-sm text-primary-600 hover:text-orange-700 font-medium flex-1 text-right"
                   >
                     구매 링크 →
                   </a>

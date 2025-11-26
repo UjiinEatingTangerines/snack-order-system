@@ -34,7 +34,7 @@ export default async function OrdersPage() {
         </h1>
         <Link
           href="/orders/new"
-          className="w-full sm:w-auto text-center bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition-colors whitespace-nowrap"
+          className="w-full sm:w-auto text-center bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 transition-colors whitespace-nowrap"
         >
           + 새 주문 만들기
         </Link>
@@ -47,7 +47,7 @@ export default async function OrdersPage() {
           </p>
           <Link
             href="/orders/new"
-            className="inline-block bg-orange-600 text-white px-6 py-3 rounded-md hover:bg-orange-700 transition-colors"
+            className="inline-block bg-primary-600 text-white px-6 py-3 rounded-md hover:bg-primary-700 transition-colors"
           >
             첫 주문 만들기
           </Link>

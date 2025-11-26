@@ -3,13 +3,13 @@ export default function Footer() {
   const buildDate = process.env.NEXT_PUBLIC_BUILD_DATE || new Date().toISOString().split('T')[0]
 
   return (
-    <footer className="mt-12 border-t border-gray-200 bg-gray-50">
+    <footer className="mt-12 border-t border-cream-200 bg-cream-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-center md:text-left">
             <p className="text-sm text-gray-600">
               Made with ❤️ by{' '}
-              <span className="font-semibold text-orange-600">김현우</span>
+              <span className="font-semibold text-primary-600">김현우</span>
             </p>
             <p className="text-xs text-gray-500 mt-1">
               회사 간식 주문을 더 쉽고 재미있게
@@ -18,7 +18,7 @@ export default function Footer() {
 
           <div className="text-center md:text-right">
             <div className="flex items-center gap-2 text-xs text-gray-500">
-              <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded font-mono">
+              <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded font-mono">
                 v{version}
               </span>
               <span>•</span>
@@ -29,7 +29,7 @@ export default function Footer() {
                 href="https://github.com/UjiinEatingTangerines/snack-order-system"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-gray-600 hover:text-orange-600 transition-colors"
+                className="text-xs text-gray-600 hover:text-primary-600 transition-colors"
               >
                 GitHub
               </a>

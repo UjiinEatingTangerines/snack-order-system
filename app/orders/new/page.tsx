@@ -313,7 +313,7 @@ export default function NewOrderPage() {
             <button
               onClick={handleSubmit}
               disabled={submitting || orderItems.length === 0}
-              className="w-full bg-orange-600 text-white py-3 rounded-md hover:bg-orange-700 disabled:bg-gray-400 transition-colors font-medium"
+              className="w-full bg-primary-600 text-white py-3 rounded-md hover:bg-primary-700 disabled:bg-gray-400 transition-colors font-medium"
             >
               {submitting ? '주문 생성 중...' : '주문 완료'}
             </button>

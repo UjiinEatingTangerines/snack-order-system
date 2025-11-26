@@ -134,7 +134,7 @@ export default function ProposePage() {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 disabled:bg-gray-400 transition-colors"
+              className="flex-1 bg-primary-600 text-white py-2 px-4 rounded-md hover:bg-primary-700 disabled:bg-gray-400 transition-colors"
             >
               {loading ? '제안 중...' : '간식 제안하기'}
             </button>

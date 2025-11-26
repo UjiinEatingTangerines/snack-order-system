@@ -29,7 +29,7 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
         />
       </head>
-      <body className="bg-gray-50 min-h-screen flex flex-col font-pretendard">
+      <body className="bg-cream-50 min-h-screen flex flex-col font-pretendard">
         <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
           {children}

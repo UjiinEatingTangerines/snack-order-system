@@ -47,7 +47,7 @@ export default function TrendingSnacks({ initialSnacks }: { initialSnacks: Trend
         <button
           onClick={handleRefresh}
           disabled={loading}
-          className="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded hover:bg-orange-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="text-xs bg-primary-100 text-primary-700 px-3 py-1 rounded hover:bg-primary-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? '업데이트 중...' : '새로고침'}
         </button>
@@ -55,7 +55,7 @@ export default function TrendingSnacks({ initialSnacks }: { initialSnacks: Trend
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mb-4"></div>
           <p className="text-gray-600 text-sm">네이버 쇼핑에서 인기 간식을 불러오는 중...</p>
         </div>
       ) : snacks.length === 0 ? (
@@ -94,7 +94,7 @@ export default function TrendingSnacks({ initialSnacks }: { initialSnacks: Trend
                 href={snack.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-orange-600 hover:text-orange-700 whitespace-nowrap"
+                className="text-xs text-primary-600 hover:text-primary-700 whitespace-nowrap"
               >
                 보기 →
               </a>

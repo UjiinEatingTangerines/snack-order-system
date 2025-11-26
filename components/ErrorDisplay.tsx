@@ -181,7 +181,7 @@ export default function ErrorDisplay({
           {reset && (
             <button
               onClick={reset}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+              className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
             >
               다시 시도하기
             </button>
