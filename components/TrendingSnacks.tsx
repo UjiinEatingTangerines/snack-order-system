@@ -85,9 +85,9 @@ export default function TrendingSnacks({ initialSnacks }: { initialSnacks: Trend
                   </div>
                 )}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900 text-sm truncate">
-                  {snack.name}
+              <div className="flex-1 min-w-0 max-w-[200px]">
+                <p className="font-medium text-gray-900 text-sm truncate" title={snack.name}>
+                  {snack.name.length > 10 ? `${snack.name.substring(0, 10)}...` : snack.name}
                 </p>
               </div>
               <a
