@@ -6,7 +6,7 @@ import WeeklyOrderBanner from '@/components/WeeklyOrderBanner'
 import FloatingMySnacksButton from '@/components/FloatingMySnacksButton'
 import FloatingVoteButton from '@/components/FloatingVoteButton'
 import ActivityNotification from '@/components/ActivityNotification'
-import BackgroundMusic from '@/components/BackgroundMusic'
+import AnnouncementBanner from '@/components/AnnouncementBanner'
 
 export const metadata: Metadata = {
   title: 'YUM.GG',
@@ -37,6 +37,7 @@ export default function RootLayout({
       <body className="bg-cream-50 min-h-screen flex flex-col font-pretendard">
         <ActivityNotification />
         <WeeklyOrderBanner />
+        <AnnouncementBanner />
         <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
           {children}
@@ -44,7 +45,6 @@ export default function RootLayout({
         <Footer />
         <FloatingVoteButton />
         <FloatingMySnacksButton />
-        <BackgroundMusic />
       </body>
     </html>
   )

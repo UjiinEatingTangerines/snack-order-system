@@ -21,17 +21,47 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
   const [filter, setFilter] = useState<string>('all')
   const [votingSnackId, setVotingSnackId] = useState<string | null>(null)
   const [votedSnacks, setVotedSnacks] = useState<Set<string>>(new Set())
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [deletingSnackId, setDeletingSnackId] = useState<string | null>(null)
 
-  // 로컬스토리지에서 투표 이력 불러오기
+  // 쿠키에서 투표 이력 불러오기
   useEffect(() => {
-    const voted = localStorage.getItem('votedSnacks')
-    if (voted) {
-      setVotedSnacks(new Set(JSON.parse(voted)))
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`
+      const parts = value.split(`; ${name}=`)
+      if (parts.length === 2) {
+        return parts.pop()?.split(';').shift()
+      }
+      return null
+    }
+
+    const votedSnacksCookie = getCookie('voted_snacks')
+    if (votedSnacksCookie) {
+      try {
+        const voted = JSON.parse(decodeURIComponent(votedSnacksCookie))
+        setVotedSnacks(new Set(voted))
+      } catch (error) {
+        console.error('쿠키 파싱 오류:', error)
+      }
     }
   }, [])
 
+  // 어드민 권한 확인
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const response = await fetch('/api/auth/check')
+        const data = await response.json()
+        setIsAdmin(data.isAdmin)
+      } catch (error) {
+        console.error('권한 확인 오류:', error)
+      }
+    }
+    checkAdmin()
+  }, [])
+
   const handleVote = async (snackId: string) => {
-    // 이미 투표한 간식인지 확인
+    // 이미 투표한 간식인지 확인 (클라이언트 측 빠른 체크)
     if (votedSnacks.has(snackId)) {
       alert('이미 투표한 간식입니다.')
       return
@@ -56,18 +86,52 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
             : s
         ))
 
-        // 투표한 간식 기록
+        // 투표한 간식 기록 (쿠키에서 다시 읽어오기)
         const newVotedSnacks = new Set(votedSnacks)
         newVotedSnacks.add(snackId)
         setVotedSnacks(newVotedSnacks)
-        localStorage.setItem('votedSnacks', JSON.stringify(Array.from(newVotedSnacks)))
       } else {
-        alert('투표 중 오류가 발생했습니다.')
+        const data = await response.json()
+        alert(data.error || '투표 중 오류가 발생했습니다.')
+
+        // 서버에서 이미 투표했다고 하면 로컬 상태도 업데이트
+        if (response.status === 403) {
+          const newVotedSnacks = new Set(votedSnacks)
+          newVotedSnacks.add(snackId)
+          setVotedSnacks(newVotedSnacks)
+        }
       }
     } catch (error) {
       alert('투표 중 오류가 발생했습니다.')
     } finally {
       setVotingSnackId(null)
+    }
+  }
+
+  const handleDelete = async (snackId: string, snackName: string) => {
+    if (!confirm(`"${snackName}" 간식을 정말 삭제하시겠습니까?`)) {
+      return
+    }
+
+    setDeletingSnackId(snackId)
+
+    try {
+      const response = await fetch(`/api/snacks/${snackId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        // 로컬 상태에서 삭제
+        setSnacks(snacks.filter(s => s.id !== snackId))
+        alert('간식이 삭제되었습니다.')
+      } else {
+        const data = await response.json()
+        alert(data.error || '삭제 중 오류가 발생했습니다.')
+      }
+    } catch (error) {
+      alert('삭제 중 오류가 발생했습니다.')
+    } finally {
+      setDeletingSnackId(null)
     }
   }
 
@@ -185,6 +249,19 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
                     구매 링크 →
                   </a>
                 </div>
+
+                {/* 어드민 전용 삭제 버튼 */}
+                {isAdmin && (
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <button
+                      onClick={() => handleDelete(snack.id, snack.name)}
+                      disabled={deletingSnackId === snack.id}
+                      className="w-full px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {deletingSnackId === snack.id ? '삭제 중...' : '🗑️ 삭제'}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}

@@ -58,6 +58,7 @@ export default function Navigation() {
     { href: '/snacks', label: '간식 목록', adminOnly: false },
     { href: '/orders', label: '주문 이력', adminOnly: true },
     { href: '/orders/new', label: '주문하기', adminOnly: true },
+    { href: '/admin/announce', label: '📢 외치기', adminOnly: true },
   ]
 
   const links = allLinks.filter(link => !link.adminOnly || isAdmin)
