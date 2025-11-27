@@ -14,6 +14,7 @@ export default function BackgroundMusic() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isReady, setIsReady] = useState(false)
   const [volume, setVolume] = useState(30) // 기본 볼륨 30%
+  const [userInteracted, setUserInteracted] = useState(false)
 
   useEffect(() => {
     // YouTube IFrame API 스크립트 로드
@@ -29,7 +30,7 @@ export default function BackgroundMusic() {
         width: '0',
         videoId: 'r2ko422xW0w', // YouTube 비디오 ID
         playerVars: {
-          autoplay: 0,
+          autoplay: 1,
           controls: 0,
           start: 1381, // 시작 시간 (초)
           loop: 1,
@@ -39,6 +40,8 @@ export default function BackgroundMusic() {
           onReady: (event: any) => {
             setIsReady(true)
             event.target.setVolume(30) // 초기 볼륨 설정
+            // 자동 재생 시도
+            event.target.playVideo()
           },
           onStateChange: (event: any) => {
             // 재생 상태 업데이트
@@ -48,10 +51,23 @@ export default function BackgroundMusic() {
       })
     }
 
+    // 사용자 인터랙션 후 자동 재생 시도
+    const handleUserInteraction = () => {
+      if (!userInteracted && playerRef.current) {
+        playerRef.current.playVideo()
+        setUserInteracted(true)
+      }
+    }
+
+    document.addEventListener('click', handleUserInteraction, { once: true })
+    document.addEventListener('keydown', handleUserInteraction, { once: true })
+
     return () => {
       if (playerRef.current) {
         playerRef.current.destroy()
       }
+      document.removeEventListener('click', handleUserInteraction)
+      document.removeEventListener('keydown', handleUserInteraction)
     }
   }, [])
 
@@ -73,10 +89,6 @@ export default function BackgroundMusic() {
     }
   }
 
-  if (!isReady) {
-    return null // API가 준비될 때까지 숨김
-  }
-
   return (
     <>
       {/* 숨겨진 YouTube 플레이어 */}
@@ -89,13 +101,14 @@ export default function BackgroundMusic() {
             <span className="text-sm font-medium text-gray-700">🎵 배경음악</span>
             <button
               onClick={togglePlay}
+              disabled={!isReady}
               className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                 isPlaying
                   ? 'bg-primary-600 text-white hover:bg-primary-700'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              {isPlaying ? '⏸ 일시정지' : '▶ 재생'}
+              {!isReady ? '로딩 중...' : isPlaying ? '⏸ 일시정지' : '▶ 재생'}
             </button>
           </div>
 
@@ -108,7 +121,8 @@ export default function BackgroundMusic() {
               max="100"
               value={volume}
               onChange={handleVolumeChange}
-              className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
+              disabled={!isReady}
+              className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <span className="text-xs text-gray-600 w-8">{volume}%</span>
           </div>
