@@ -118,7 +118,7 @@ export default function RecommendedSnacks() {
 
       <style jsx>{`
         .animate-scroll-slow {
-          animation: scroll-slow 40s linear infinite;
+          animation: scroll-slow 30s linear infinite;
         }
         .animate-scroll-slow:hover {
           animation-play-state: paused;
