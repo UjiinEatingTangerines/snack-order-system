@@ -15,6 +15,7 @@ export default function BackgroundMusic() {
   const [isReady, setIsReady] = useState(false)
   const [volume, setVolume] = useState(30) // 기본 볼륨 30%
   const [userInteracted, setUserInteracted] = useState(false)
+  const userPausedRef = useRef(false) // 사용자가 수동으로 일시정지했는지 추적
 
   useEffect(() => {
     // YouTube IFrame API 스크립트 로드
@@ -41,27 +42,42 @@ export default function BackgroundMusic() {
           onReady: (event: any) => {
             setIsReady(true)
 
-            // 음소거 상태로 먼저 재생
-            event.target.playVideo().then(() => {
-              // 재생이 시작되면 즉시 음소거 해제
-              setTimeout(() => {
+            // 음소거 상태로 재생 시작
+            event.target.playVideo()
+
+            // 1초 후 음소거 해제 (재생이 안정화된 후)
+            setTimeout(() => {
+              if (event.target.getPlayerState() === window.YT.PlayerState.PLAYING) {
                 event.target.unMute()
                 event.target.setVolume(30)
-              }, 500)
-            }).catch(() => {
-              // 실패하면 재시도
-              console.log('자동 재생 실패, 사용자 인터랙션 대기 중...')
-            })
+              } else {
+                // 재생이 안 되면 다시 시도
+                event.target.playVideo()
+                setTimeout(() => {
+                  event.target.unMute()
+                  event.target.setVolume(30)
+                }, 500)
+              }
+            }, 1000)
           },
           onStateChange: (event: any) => {
-            // 재생 상태 업데이트
-            setIsPlaying(event.data === window.YT.PlayerState.PLAYING)
+            const state = event.data
+            setIsPlaying(state === window.YT.PlayerState.PLAYING)
 
-            // 재생이 시작되면 음소거 해제 확인
-            if (event.data === window.YT.PlayerState.PLAYING && event.target.isMuted()) {
+            // 재생이 시작되면 음소거 해제
+            if (state === window.YT.PlayerState.PLAYING) {
+              if (event.target.isMuted()) {
+                setTimeout(() => {
+                  event.target.unMute()
+                  event.target.setVolume(30)
+                }, 100)
+              }
+            }
+
+            // 재생이 멈췄을 때 (사용자가 수동으로 멈춘 게 아니면 자동 재생)
+            if (state === window.YT.PlayerState.PAUSED && !userPausedRef.current) {
               setTimeout(() => {
-                event.target.unMute()
-                event.target.setVolume(30)
+                event.target.playVideo()
               }, 100)
             }
           },
@@ -72,6 +88,7 @@ export default function BackgroundMusic() {
     // 사용자 인터랙션 후 자동 재생 시도 (다양한 이벤트 감지)
     const handleUserInteraction = () => {
       if (!userInteracted && playerRef.current) {
+        userPausedRef.current = false // 자동 재생이므로 false
         playerRef.current.playVideo()
         // 음소거 해제
         if (playerRef.current.isMuted()) {
@@ -102,8 +119,12 @@ export default function BackgroundMusic() {
     if (!playerRef.current) return
 
     if (isPlaying) {
+      // 사용자가 수동으로 일시정지
+      userPausedRef.current = true
       playerRef.current.pauseVideo()
     } else {
+      // 사용자가 재생 버튼 클릭
+      userPausedRef.current = false
       // 음소거 상태이면 해제
       if (playerRef.current.isMuted()) {
         playerRef.current.unMute()
