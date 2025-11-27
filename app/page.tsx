@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import TrendingSnacks from '@/components/TrendingSnacks'
 import OrderStatusBlock from '@/components/OrderStatusBlock'
 import RecommendedSnacks from '@/components/RecommendedSnacks'
+import BackgroundMusic from '@/components/BackgroundMusic'
 
 type DashboardData = {
   totalSnacks: number
@@ -425,6 +426,8 @@ export default function Home() {
         </div>
       </div>
 
+      {/* 배경음악 플레이어 */}
+      <BackgroundMusic />
     </div>
   )
 }

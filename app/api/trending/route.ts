@@ -38,14 +38,14 @@ export async function POST() {
       return apiError(500, '네이버 API 키 미설정')
     }
 
-    // 검색 키워드
-    const keywords = ['인기 과자', '화제 간식', '신제품 스낵']
+    // 검색 키워드 (일반적인 키워드로 검색하여 가장 많이 검색되는 상품 조회)
+    const keywords = ['간식', '과자', '스낵']
     const allProducts: any[] = []
 
-    // 각 키워드로 검색
+    // 각 키워드로 검색 (정확도순 = 네이버 인기도/검색량 기반 정렬)
     for (const keyword of keywords) {
       const response = await fetch(
-        `https://openapi.naver.com/v1/search/shop.json?query=${encodeURIComponent(keyword)}&display=10&sort=sim`,
+        `https://openapi.naver.com/v1/search/shop.json?query=${encodeURIComponent(keyword)}&display=20&sort=sim`,
         {
           headers: {
             'X-Naver-Client-Id': clientId,
