@@ -17,6 +17,13 @@ export default function RecommendedSnacks() {
 
   useEffect(() => {
     fetchRecommendations()
+
+    // 10분(600,000ms)마다 자동 새로고침
+    const interval = setInterval(() => {
+      fetchRecommendations()
+    }, 600000)
+
+    return () => clearInterval(interval)
   }, [])
 
   const fetchRecommendations = async () => {
@@ -67,12 +74,13 @@ export default function RecommendedSnacks() {
       </div>
 
       {/* 가로 스크롤 컨테이너 */}
-      <div className="relative">
-        <div className="overflow-x-auto scrollbar-hide">
-          <div className="flex gap-4 pb-4 animate-scroll-slow">
-            {snacks.map((snack) => (
+      <div className="relative overflow-hidden">
+        <div className="flex gap-4 pb-4 animate-scroll-slow">
+          {/* 간식 아이템을 4번 반복해서 끊김 없는 무한 스크롤 효과 */}
+          {[...Array(4)].map((_, setIndex) => (
+            snacks.map((snack) => (
               <a
-                key={snack.id}
+                key={`set-${setIndex}-${snack.id}`}
                 href={snack.url}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -99,8 +107,8 @@ export default function RecommendedSnacks() {
                   </div>
                 </div>
               </a>
-            ))}
-          </div>
+            ))
+          ))}
         </div>
 
         {/* 그라데이션 오버레이 (양쪽 끝) */}
@@ -109,19 +117,18 @@ export default function RecommendedSnacks() {
       </div>
 
       <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
+        .animate-scroll-slow {
+          animation: scroll-slow 60s linear infinite;
         }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
+        .animate-scroll-slow:hover {
+          animation-play-state: paused;
         }
         @keyframes scroll-slow {
           0% {
             transform: translateX(0);
           }
           100% {
-            transform: translateX(-50%);
+            transform: translateX(-25%);
           }
         }
       `}</style>
