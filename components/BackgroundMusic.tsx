@@ -15,6 +15,7 @@ export default function BackgroundMusic() {
   const [isReady, setIsReady] = useState(false)
   const [volume, setVolume] = useState(30) // 기본 볼륨 30%
   const [userInteracted, setUserInteracted] = useState(false)
+  const [bottomPosition, setBottomPosition] = useState(24) // 기본 bottom 위치 (6 * 4 = 24px)
   const userPausedRef = useRef(false) // 사용자가 수동으로 일시정지했는지 추적
 
   useEffect(() => {
@@ -36,46 +37,24 @@ export default function BackgroundMusic() {
           start: 1381, // 시작 시간 (초)
           loop: 1,
           playlist: 'r2ko422xW0w', // 루프를 위해 필요
-          mute: 1, // 음소거 상태로 시작 (브라우저 정책 우회)
+          mute: 1, // 음소거 상태로 시작 (브라우저 정책 준수)
         },
         events: {
           onReady: (event: any) => {
             setIsReady(true)
+            console.log('YouTube Player Ready - playing muted')
 
-            // 음소거 상태로 재생 시작
+            // 음소거 상태로 재생 시작 (브라우저가 허용)
             event.target.playVideo()
-
-            // 1초 후 음소거 해제 (재생이 안정화된 후)
-            setTimeout(() => {
-              if (event.target.getPlayerState() === window.YT.PlayerState.PLAYING) {
-                event.target.unMute()
-                event.target.setVolume(30)
-              } else {
-                // 재생이 안 되면 다시 시도
-                event.target.playVideo()
-                setTimeout(() => {
-                  event.target.unMute()
-                  event.target.setVolume(30)
-                }, 500)
-              }
-            }, 1000)
           },
           onStateChange: (event: any) => {
             const state = event.data
+            console.log('Player state changed:', state, 'PLAYING=1, PAUSED=2')
             setIsPlaying(state === window.YT.PlayerState.PLAYING)
-
-            // 재생이 시작되면 음소거 해제
-            if (state === window.YT.PlayerState.PLAYING) {
-              if (event.target.isMuted()) {
-                setTimeout(() => {
-                  event.target.unMute()
-                  event.target.setVolume(30)
-                }, 100)
-              }
-            }
 
             // 재생이 멈췄을 때 (사용자가 수동으로 멈춘 게 아니면 자동 재생)
             if (state === window.YT.PlayerState.PAUSED && !userPausedRef.current) {
+              console.log('Auto-restarting paused video')
               setTimeout(() => {
                 event.target.playVideo()
               }, 100)
@@ -85,22 +64,32 @@ export default function BackgroundMusic() {
       })
     }
 
-    // 사용자 인터랙션 후 자동 재생 시도 (다양한 이벤트 감지)
+    // 사용자 인터랙션 후 음소거 해제
     const handleUserInteraction = () => {
-      if (!userInteracted && playerRef.current) {
-        userPausedRef.current = false // 자동 재생이므로 false
-        playerRef.current.playVideo()
+      if (!userInteracted && playerRef.current && isReady) {
+        console.log('User interaction detected - unmuting')
+        setUserInteracted(true)
+
         // 음소거 해제
         if (playerRef.current.isMuted()) {
           playerRef.current.unMute()
           playerRef.current.setVolume(30)
+
+          // 재생 보장
+          setTimeout(() => {
+            const state = playerRef.current.getPlayerState()
+            if (state !== window.YT.PlayerState.PLAYING) {
+              console.log('Restarting after unmute')
+              playerRef.current.playVideo()
+            }
+            console.log('Unmute complete, state:', state)
+          }, 100)
         }
-        setUserInteracted(true)
       }
     }
 
     // 여러 이벤트에 리스너 등록
-    const events = ['click', 'keydown', 'touchstart', 'mousemove', 'scroll']
+    const events = ['click', 'keydown', 'touchstart', 'scroll']
     events.forEach(event => {
       document.addEventListener(event, handleUserInteraction, { once: true })
     })
@@ -113,6 +102,31 @@ export default function BackgroundMusic() {
         document.removeEventListener(event, handleUserInteraction)
       })
     }
+  }, [isReady, userInteracted])
+
+  // Footer와 겹치지 않도록 스크롤 시 위치 조정
+  useEffect(() => {
+    const handleScroll = () => {
+      const footer = document.querySelector('footer')
+      if (!footer) return
+
+      const footerRect = footer.getBoundingClientRect()
+      const windowHeight = window.innerHeight
+
+      // footer가 화면에 보이는지 확인
+      if (footerRect.top < windowHeight) {
+        // footer와 겹치지 않도록 위치 조정
+        const overlap = windowHeight - footerRect.top
+        setBottomPosition(24 + overlap)
+      } else {
+        setBottomPosition(24)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    handleScroll() // 초기 위치 설정
+
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   const togglePlay = () => {
@@ -151,19 +165,21 @@ export default function BackgroundMusic() {
       {/* 숨겨진 YouTube 플레이어 */}
       <div id="youtube-player" style={{ display: 'none' }}></div>
 
-      {/* 음악 컨트롤 UI (우측 하단 고정) */}
-      <div className="fixed bottom-6 right-6 bg-white rounded-lg shadow-lg p-4 z-[60] border border-gray-200">
+      {/* 음악 컨트롤 UI (좌측 하단 고정) */}
+      <div
+        className="fixed left-6 bg-white rounded-lg shadow-lg p-4 z-[60] border border-gray-200"
+        style={{ bottom: `${bottomPosition}px` }}
+      >
         <div className="flex flex-col gap-3 w-48">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700">🎵 배경음악</span>
             <button
               onClick={togglePlay}
               disabled={!isReady}
-              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                isPlaying
-                  ? 'bg-primary-600 text-white hover:bg-primary-700'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${isPlaying
+                ? 'bg-primary-600 text-white hover:bg-primary-700'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {!isReady ? '로딩 중...' : isPlaying ? '⏸ 일시정지' : '▶ 재생'}
             </button>

@@ -6,6 +6,7 @@ import WeeklyOrderBanner from '@/components/WeeklyOrderBanner'
 import FloatingMySnacksButton from '@/components/FloatingMySnacksButton'
 import FloatingVoteButton from '@/components/FloatingVoteButton'
 import ActivityNotification from '@/components/ActivityNotification'
+import BackgroundMusic from '@/components/BackgroundMusic'
 
 export const metadata: Metadata = {
   title: 'YUM.GG',
@@ -43,6 +44,7 @@ export default function RootLayout({
         <Footer />
         <FloatingVoteButton />
         <FloatingMySnacksButton />
+        <BackgroundMusic />
       </body>
     </html>
   )
