@@ -258,12 +258,13 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 이번 주 인기 간식 */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            인기 간식 Top 5
+          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center justify-between">
+            <span>이번 주 인기 간식 Top 5</span>
+            <span className="text-xs text-gray-500 font-normal">매주 월요일 리셋</span>
           </h2>
           {data.topSnacks.length === 0 ? (
             <p className="text-gray-500 text-sm">
-              아직 투표된 간식이 없습니다.
+              이번 주에 투표된 간식이 없습니다.
             </p>
           ) : (
             <div className="space-y-3">

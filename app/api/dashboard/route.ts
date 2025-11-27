@@ -37,11 +37,35 @@ export async function GET() {
       where: { createdAt: { gte: oneWeekAgo } }
     })
 
-    // 투표 수 기준 상위 5개 간식 조회
+    // 이번 주 월요일 0시 계산
+    const getThisWeekMonday = () => {
+      const today = new Date()
+      const dayOfWeek = today.getDay()
+      const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1 // 일요일이면 6일 전, 아니면 현재 요일 - 1
+      const monday = new Date(today)
+      monday.setDate(today.getDate() - daysToSubtract)
+      monday.setHours(0, 0, 0, 0)
+      return monday
+    }
+
+    const thisWeekMonday = getThisWeekMonday()
+
+    // 이번 주 투표 수 기준 상위 5개 간식 조회 (매주 월요일 0시부터 집계)
     const topSnacks = await prisma.snack.findMany({
+      where: {
+        votes: {
+          some: {
+            createdAt: { gte: thisWeekMonday }
+          }
+        }
+      },
       include: {
         _count: {
-          select: { votes: true }
+          select: {
+            votes: {
+              where: { createdAt: { gte: thisWeekMonday } }
+            }
+          }
         }
       },
       orderBy: {
