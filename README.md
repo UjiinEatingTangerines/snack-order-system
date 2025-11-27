@@ -7,8 +7,10 @@
 ### 🎯 사용자 기능 (모든 사용자)
 - **간식 조르기**: 네이버 쇼핑 검색으로 간식을 쉽게 찾아 제안
 - **내 간식 주머니**: 자신이 제안한 간식 목록 확인 (우측 하단 플로팅 버튼)
-- **실시간 대시보드**: 인기 간식 Top 5와 최근 제안 확인
-- **트렌딩 간식**: 네이버 쇼핑 API로 현재 인기있는 간식 추천 (5초 쿨다운)
+- **실시간 대시보드**: 이번 주 인기 간식 Top 5와 최근 제안 확인 (매주 월요일 리셋)
+- **오늘의 추천 간식**: 무한 스크롤 애니메이션으로 추천 간식 표시 (10분마다 자동 새로고침)
+- **트렌딩 간식**: 네이버 쇼핑에서 가장 많이 검색되는 인기 간식 실시간 조회 (5초 쿨다운)
+- **배경음악**: YouTube 배경음악 재생 (자동 재생, 볼륨 조절 가능)
 - **주간 현황**: 이번 주 주문 현황을 상단 배너에서 실시간 확인
 
 ### 👨‍💼 관리자 기능 (관리자 전용)
@@ -69,8 +71,8 @@ ADMIN_PASSWORD="your-admin-password"
 SESSION_SECRET="your-secret-key-change-this-in-production"
 
 # 앱 버전
-NEXT_PUBLIC_APP_VERSION="0.8.0"
-NEXT_PUBLIC_BUILD_DATE="2025-11-26"
+NEXT_PUBLIC_APP_VERSION="0.12.0"
+NEXT_PUBLIC_BUILD_DATE="2025-11-27"
 ```
 
 #### Neon 데이터베이스 사용 시 (Vercel 배포)
@@ -115,8 +117,10 @@ snack-order-system/
 │   │   │   ├── check/          # 세션 확인
 │   │   │   ├── login/          # 로그인
 │   │   │   └── logout/         # 로그아웃
+│   │   ├── dashboard/          # 대시보드 데이터
 │   │   ├── my-snacks/          # 내 간식 주머니
 │   │   ├── orders/             # 주문 관련 API
+│   │   ├── recommendations/    # 오늘의 추천 간식
 │   │   ├── search-snacks/      # 네이버 쇼핑 검색
 │   │   ├── snacks/             # 간식 관련 API
 │   │   ├── trending/           # 트렌딩 간식
@@ -128,11 +132,14 @@ snack-order-system/
 │   ├── snacks/                 # 간식 목록 페이지
 │   └── page.tsx                # 간식 허브 (대시보드)
 ├── components/
+│   ├── BackgroundMusic.tsx     # YouTube 배경음악 플레이어
 │   ├── ErrorDisplay.tsx        # 재미있는 에러 페이지
 │   ├── FloatingMySnacksButton.tsx  # 내 간식 주머니 플로팅 버튼
 │   ├── Footer.tsx              # 푸터
 │   ├── LoadingOverlay.tsx      # 로딩 오버레이
 │   ├── Navigation.tsx          # 네비게이션 바
+│   ├── OrderStatusBlock.tsx    # 주문 현황 블록
+│   ├── RecommendedSnacks.tsx   # 오늘의 추천 간식 (무한 스크롤)
 │   ├── Toast.tsx               # 토스트 알림
 │   ├── TrendingSnacks.tsx      # 트렌딩 간식 위젯
 │   └── WeeklyOrderBanner.tsx   # 주간 주문 배너
@@ -281,6 +288,27 @@ npm run lint
 ```
 
 ## 🆕 업데이트 내역
+
+### v0.12.0 (2025-11-27)
+- 🎵 **배경음악 플레이어 추가**
+  - YouTube 배경음악 자동 재생
+  - 재생/일시정지 및 볼륨 조절 기능 (0~100%)
+  - 우측 하단 고정 컨트롤러
+  - 무한 반복 재생
+- 🎁 **오늘의 추천 간식 기능**
+  - 네이버 쇼핑 API 추천 상품 표시
+  - 왼쪽으로 흐르는 무한 스크롤 애니메이션 (30초)
+  - 호버 시 애니메이션 일시정지
+  - 10분마다 자동 새로고침
+- 📊 **인기 간식 Top 5 주간 집계**
+  - 매주 월요일 0시부터 투표 집계 시작
+  - 이번 주에 투표된 간식만 Top 5에 표시
+  - 월요일이 되면 자동으로 리셋
+  - UI에 "매주 월요일 리셋" 안내 표시
+- 🔥 **트렌딩 간식 검색 개선**
+  - 네이버 인기도 기반 검색으로 변경
+  - 실제로 가장 많이 검색되는 인기 간식 조회
+  - 검색 키워드를 일반 용어로 변경 ('간식', '과자', '스낵')
 
 ### v0.11.0 (2025-11-26)
 - 🗳️ 투표 기능 오픈
