@@ -15,6 +15,7 @@ export default function BackgroundMusic() {
   const [isReady, setIsReady] = useState(false)
   const [volume, setVolume] = useState(30) // 기본 볼륨 30%
   const [userInteracted, setUserInteracted] = useState(false)
+  const autoPlayAttemptRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     // YouTube IFrame API 스크립트 로드
@@ -35,13 +36,30 @@ export default function BackgroundMusic() {
           start: 1381, // 시작 시간 (초)
           loop: 1,
           playlist: 'r2ko422xW0w', // 루프를 위해 필요
+          mute: 0,
         },
         events: {
           onReady: (event: any) => {
             setIsReady(true)
             event.target.setVolume(30) // 초기 볼륨 설정
+
             // 자동 재생 시도
-            event.target.playVideo()
+            setTimeout(() => {
+              event.target.playVideo()
+            }, 100)
+
+            // 재생이 안 되면 1초마다 재시도 (최대 10번)
+            let attempts = 0
+            autoPlayAttemptRef.current = setInterval(() => {
+              if (attempts < 10 && event.target.getPlayerState() !== window.YT.PlayerState.PLAYING) {
+                event.target.playVideo()
+                attempts++
+              } else if (attempts >= 10 || event.target.getPlayerState() === window.YT.PlayerState.PLAYING) {
+                if (autoPlayAttemptRef.current) {
+                  clearInterval(autoPlayAttemptRef.current)
+                }
+              }
+            }, 1000)
           },
           onStateChange: (event: any) => {
             // 재생 상태 업데이트
@@ -51,7 +69,7 @@ export default function BackgroundMusic() {
       })
     }
 
-    // 사용자 인터랙션 후 자동 재생 시도
+    // 사용자 인터랙션 후 자동 재생 시도 (다양한 이벤트 감지)
     const handleUserInteraction = () => {
       if (!userInteracted && playerRef.current) {
         playerRef.current.playVideo()
@@ -59,15 +77,22 @@ export default function BackgroundMusic() {
       }
     }
 
-    document.addEventListener('click', handleUserInteraction, { once: true })
-    document.addEventListener('keydown', handleUserInteraction, { once: true })
+    // 여러 이벤트에 리스너 등록
+    const events = ['click', 'keydown', 'touchstart', 'mousemove', 'scroll']
+    events.forEach(event => {
+      document.addEventListener(event, handleUserInteraction, { once: true })
+    })
 
     return () => {
       if (playerRef.current) {
         playerRef.current.destroy()
       }
-      document.removeEventListener('click', handleUserInteraction)
-      document.removeEventListener('keydown', handleUserInteraction)
+      if (autoPlayAttemptRef.current) {
+        clearInterval(autoPlayAttemptRef.current)
+      }
+      events.forEach(event => {
+        document.removeEventListener(event, handleUserInteraction)
+      })
     }
   }, [])
 
@@ -95,7 +120,7 @@ export default function BackgroundMusic() {
       <div id="youtube-player" style={{ display: 'none' }}></div>
 
       {/* 음악 컨트롤 UI (우측 하단 고정) */}
-      <div className="fixed bottom-6 right-6 bg-white rounded-lg shadow-lg p-4 z-50 border border-gray-200">
+      <div className="fixed bottom-6 right-6 bg-white rounded-lg shadow-lg p-4 z-[9999] border border-gray-200">
         <div className="flex flex-col gap-3 w-48">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700">🎵 배경음악</span>
