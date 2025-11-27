@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import TrendingSnacks from '@/components/TrendingSnacks'
 import OrderStatusBlock from '@/components/OrderStatusBlock'
+import RecommendedSnacks from '@/components/RecommendedSnacks'
 
 type DashboardData = {
   totalSnacks: number
@@ -246,6 +247,11 @@ export default function Home() {
             )}
           </>
         )}
+      </div>
+
+      {/* 오늘의 추천 간식 */}
+      <div className="mb-6">
+        <RecommendedSnacks />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
