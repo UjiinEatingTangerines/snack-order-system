@@ -17,11 +17,16 @@
 - **투표 시스템**: 제안된 간식에 투표하여 인기도 측정
 - **주문 생성**: 투표 결과를 바탕으로 주문 목록 작성
 - **주문 이력**: 과거 주문 내역 조회 및 재주문
+- **주문 완료**: 이번 주 데이터 리셋 (간식/투표 클리어)
 - **카테고리 필터**: 간식을 카테고리별로 분류 및 필터링
-- **간식 목록 관리**: 제안된 모든 간식 확인
+- **간식 목록 관리**: 제안된 모든 간식 확인 및 삭제
+- **상소문 관리**: 게시글 및 댓글 삭제
+- **공지사항 관리**: 전체 사용자에게 공지 띄우기
 
 ### 🎨 사용자 경험
 - **실시간 활동 알림**: 간식 조르기 및 주문 생성 시 상단에 알림 표시
+- **공지사항 배너**: 관리자가 등록한 공지사항을 전체 페이지 상단에 표시
+- **상소문 게시판**: 자유롭게 의견을 남길 수 있는 커뮤니티 게시판 (댓글/대댓글 지원)
 - **재미있는 에러 메시지**: 20가지 간식 테마 에러 메시지 (5초마다 변경)
 - **로그인/로그아웃 알림**: 우측 상단 토스트 알림
 - **로딩 오버레이**: 인증 처리 중 화면 차단
@@ -71,8 +76,8 @@ ADMIN_PASSWORD="your-admin-password"
 SESSION_SECRET="your-secret-key-change-this-in-production"
 
 # 앱 버전
-NEXT_PUBLIC_APP_VERSION="0.12.0"
-NEXT_PUBLIC_BUILD_DATE="2025-11-27"
+NEXT_PUBLIC_APP_VERSION="1.0.0"
+NEXT_PUBLIC_BUILD_DATE="2025-12-01"
 ```
 
 #### Neon 데이터베이스 사용 시 (Vercel 배포)
@@ -113,32 +118,41 @@ Vercel 환경 변수 설정:
 snack-order-system/
 ├── app/
 │   ├── api/                      # API 라우트
+│   │   ├── announcements/       # 공지사항 API
 │   │   ├── auth/                # 인증 관련 API
 │   │   │   ├── check/          # 세션 확인
 │   │   │   ├── login/          # 로그인
 │   │   │   └── logout/         # 로그아웃
+│   │   ├── comments/           # 댓글 관련 API
 │   │   ├── dashboard/          # 대시보드 데이터
 │   │   ├── my-snacks/          # 내 간식 주머니
 │   │   ├── orders/             # 주문 관련 API
 │   │   ├── recommendations/    # 오늘의 추천 간식
+│   │   ├── reset-weekly/       # 주간 리셋 API
 │   │   ├── search-snacks/      # 네이버 쇼핑 검색
 │   │   ├── snacks/             # 간식 관련 API
+│   │   ├── suggestions/        # 상소문 관련 API
 │   │   ├── trending/           # 트렌딩 간식
 │   │   └── weekly-total/       # 주간 주문 현황
+│   ├── admin/
+│   │   └── announce/           # 공지사항 관리 페이지
 │   ├── facker/                 # 관리자 로그인 (숨김 URL)
 │   ├── my-snacks/              # 내 간식 주머니 페이지
 │   ├── orders/                 # 주문 페이지
 │   ├── propose/                # 간식 제안 페이지
 │   ├── snacks/                 # 간식 목록 페이지
+│   ├── suggestions/            # 상소문 게시판
 │   └── page.tsx                # 간식 허브 (대시보드)
 ├── components/
-│   ├── BackgroundMusic.tsx     # YouTube 배경음악 플레이어
+│   ├── ActivityNotification.tsx # 실시간 활동 알림
+│   ├── AnnouncementBanner.tsx  # 공지사항 배너
 │   ├── ErrorDisplay.tsx        # 재미있는 에러 페이지
 │   ├── FloatingMySnacksButton.tsx  # 내 간식 주머니 플로팅 버튼
-│   ├── Footer.tsx              # 푸터
+│   ├── FloatingVoteButton.tsx  # 투표 플로팅 버튼
+│   ├── Footer.tsx              # 푸터 (버전 정보 포함)
 │   ├── LoadingOverlay.tsx      # 로딩 오버레이
 │   ├── Navigation.tsx          # 네비게이션 바
-│   ├── OrderStatusBlock.tsx    # 주문 현황 블록
+│   ├── OrderStatusBlock.tsx    # 주문 현황 블록 (주문 완료 버튼 포함)
 │   ├── RecommendedSnacks.tsx   # 오늘의 추천 간식 (무한 스크롤)
 │   ├── Toast.tsx               # 토스트 알림
 │   ├── TrendingSnacks.tsx      # 트렌딩 간식 위젯
@@ -156,7 +170,7 @@ snack-order-system/
 ## 🗄️ 데이터베이스 스키마
 
 ### Snack (간식)
-- `id`, `name`, `url`, `imageUrl`, `category`, `proposedBy`, `createdAt`
+- `id`, `name`, `url`, `imageUrl`, `category`, `proposedBy`, `createdAt`, `deletedAt` (soft delete)
 - 관계: `votes[]`, `orderItems[]`
 
 ### Vote (투표)
@@ -173,6 +187,17 @@ snack-order-system/
 
 ### TrendingSnack (트렌딩)
 - `id`, `name`, `url`, `imageUrl`, `source`, `rank`, `fetchedAt`
+
+### Suggestion (상소문)
+- `id`, `title`, `content`, `authorName`, `createdAt`
+- 관계: `comments[]`
+
+### Comment (댓글)
+- `id`, `content`, `authorName`, `suggestionId`, `parentCommentId`, `createdAt`
+- 관계: `suggestion`, `parentComment`, `replies[]` (self-referencing)
+
+### Announcement (공지사항)
+- `id`, `message`, `createdAt`
 
 ## 🎯 사용 가이드
 
@@ -288,6 +313,34 @@ npm run lint
 ```
 
 ## 🆕 업데이트 내역
+
+### v1.0.0 (2025-12-01) 🎉
+- 📜 **상소문 게시판 추가**
+  - 자유롭게 의견을 남길 수 있는 커뮤니티 게시판
+  - 댓글 및 대댓글 기능 (무한 depth)
+  - 어드민 삭제 기능 (게시글/댓글)
+  - 실시간 댓글 작성 및 답글
+- ✅ **주문 완료 기능 추가**
+  - 어드민이 주문 완료 버튼 클릭 시 주간 데이터 리셋
+  - 이번 주 생성된 간식 soft delete 처리
+  - 이번 주 생성된 투표 삭제
+  - 주문 이력은 유지 (soft delete 간식도 주문 이력에서 확인 가능)
+  - 통계 자동 업데이트 (총 간식 수, 총 투표 수 등)
+- 🗑️ **Soft Delete 시스템**
+  - 주문된 간식은 soft delete 처리되어 목록에서 숨김
+  - 주문 이력에서는 계속 확인 가능
+  - 매달 자동으로 오래된 soft delete 간식 정리
+- 📊 **간식 목록 정렬 기능**
+  - 최신순, 오래된순, 인기순 정렬
+  - soft delete된 간식은 목록에서 제외
+- 📢 **공지사항 시스템 개선**
+  - 전체 페이지 상단에 공지사항 배너 표시
+  - 닫기 버튼으로 일시적으로 숨김 가능
+  - 어드민이 자유롭게 공지사항 등록/수정
+- 🎨 **UI/UX 개선**
+  - 상소문 게시판 아이콘 및 문구 개선
+  - 주문 완료 버튼 색상 및 위치 최적화
+  - 삭제 확인 메시지 및 처리 중 상태 표시
 
 ### v0.12.0 (2025-11-27)
 - 🎵 **배경음악 플레이어 추가**
