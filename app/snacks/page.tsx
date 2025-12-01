@@ -5,6 +5,9 @@ export const dynamic = 'force-dynamic'
 
 export default async function SnacksPage() {
   const snacks = await prisma.snack.findMany({
+    where: {
+      deletedAt: null
+    },
     include: {
       _count: {
         select: { votes: true }
