@@ -12,42 +12,6 @@ export async function GET() {
     const totalVotes = await prisma.vote.count()
     const totalOrders = await prisma.order.count()
 
-    // 이번 주 데이터 (지난 7일)
-    const oneWeekAgo = new Date()
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-
-    const weeklySnacks = await prisma.snack.count({
-      where: {
-        createdAt: { gte: oneWeekAgo },
-        deletedAt: null
-      }
-    })
-
-    const weeklyVotes = await prisma.vote.count({
-      where: { createdAt: { gte: oneWeekAgo } }
-    })
-
-    // 이번 주 조르기 목록
-    const weeklyProposedSnacks = await prisma.snack.findMany({
-      where: {
-        createdAt: { gte: oneWeekAgo },
-        deletedAt: null
-      },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        _count: {
-          select: { votes: true }
-        }
-      }
-    })
-
-    const weeklyProposedSnacksCount = await prisma.snack.count({
-      where: {
-        createdAt: { gte: oneWeekAgo },
-        deletedAt: null
-      }
-    })
-
     // 이번 주 월요일 0시 계산
     const getThisWeekMonday = () => {
       const today = new Date()
@@ -60,6 +24,57 @@ export async function GET() {
     }
 
     const thisWeekMonday = getThisWeekMonday()
+
+    // 다음 주 월요일 0시 계산 (이번 주 일요일 23:59:59까지)
+    const nextWeekMonday = new Date(thisWeekMonday)
+    nextWeekMonday.setDate(thisWeekMonday.getDate() + 7)
+
+    // 이번 주 데이터 (월요일 0시 ~ 일요일 23:59:59)
+    const weeklySnacks = await prisma.snack.count({
+      where: {
+        createdAt: {
+          gte: thisWeekMonday,
+          lt: nextWeekMonday
+        },
+        deletedAt: null
+      }
+    })
+
+    const weeklyVotes = await prisma.vote.count({
+      where: {
+        createdAt: {
+          gte: thisWeekMonday,
+          lt: nextWeekMonday
+        }
+      }
+    })
+
+    // 이번 주 조르기 목록 (월요일 0시 ~ 일요일 23:59:59)
+    const weeklyProposedSnacks = await prisma.snack.findMany({
+      where: {
+        createdAt: {
+          gte: thisWeekMonday,
+          lt: nextWeekMonday
+        },
+        deletedAt: null
+      },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        _count: {
+          select: { votes: true }
+        }
+      }
+    })
+
+    const weeklyProposedSnacksCount = await prisma.snack.count({
+      where: {
+        createdAt: {
+          gte: thisWeekMonday,
+          lt: nextWeekMonday
+        },
+        deletedAt: null
+      }
+    })
 
     // 이번 주 투표 수 기준 상위 5개 간식 조회 (매주 월요일 0시부터 집계, soft delete 제외)
     const topSnacks = await prisma.snack.findMany({
