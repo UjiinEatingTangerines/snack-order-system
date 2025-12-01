@@ -10,6 +10,7 @@ type Snack = {
   imageUrl: string | null
   category: string | null
   price: number | null
+  proposedBy: string | null
   _count: {
     votes: number
   }
@@ -289,19 +290,34 @@ export default function NewOrderPage() {
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
                 간식 추가하기
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {availableSnacks.slice(0, 6).map(snack => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {availableSnacks.map(snack => (
                   <button
                     key={snack.id}
                     onClick={() => addItem(snack)}
-                    className="flex items-center gap-3 p-3 bg-gray-50 hover:bg-orange-50 rounded-lg transition-colors text-left"
+                    className="flex items-center gap-3 p-4 bg-gray-50 hover:bg-orange-50 rounded-lg transition-colors text-left border border-gray-200 hover:border-orange-300"
                   >
-                    <span className="text-2xl">🍪</span>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900 text-sm">{snack.name}</p>
-                      <p className="text-xs text-gray-500">{snack._count.votes}표</p>
+                    {snack.imageUrl ? (
+                      <img
+                        src={snack.imageUrl}
+                        alt={snack.name}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded flex items-center justify-center flex-shrink-0">
+                        <span className="text-3xl">🍪</span>
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 text-sm truncate">{snack.name}</p>
+                      <p className="text-xs text-gray-500 mt-1">{snack._count.votes}표</p>
+                      {snack.proposedBy && (
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          제안: {snack.proposedBy}
+                        </p>
+                      )}
                     </div>
-                    <span className="text-orange-600 text-xl">+</span>
+                    <span className="text-orange-600 text-xl flex-shrink-0">+</span>
                   </button>
                 ))}
               </div>
