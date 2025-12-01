@@ -19,6 +19,7 @@ type Snack = {
 export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] }) {
   const [snacks, setSnacks] = useState(initialSnacks)
   const [filter, setFilter] = useState<string>('all')
+  const [sortBy, setSortBy] = useState<'latest' | 'oldest' | 'popular'>('latest')
   const [votingSnackId, setVotingSnackId] = useState<string | null>(null)
   const [votedSnacks, setVotedSnacks] = useState<Set<string>>(new Set())
   const [isAdmin, setIsAdmin] = useState(false)
@@ -135,43 +136,75 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
     }
   }
 
+  // 필터링
   const filteredSnacks = filter === 'all'
     ? snacks
     : snacks.filter(s => s.category === filter)
+
+  // 정렬
+  const sortedSnacks = [...filteredSnacks].sort((a, b) => {
+    switch (sortBy) {
+      case 'latest':
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      case 'oldest':
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      case 'popular':
+        return b._count.votes - a._count.votes
+      default:
+        return 0
+    }
+  })
 
   const categories = Array.from(new Set(snacks.map(s => s.category).filter(Boolean)))
 
   return (
     <div>
-      {/* 필터 */}
-      <div className="mb-6 flex gap-2 flex-wrap">
-        <button
-          onClick={() => setFilter('all')}
-          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-            filter === 'all'
-              ? 'bg-primary-600 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-          }`}
-        >
-          전체
-        </button>
-        {categories.map((cat) => (
+      {/* 필터 및 정렬 */}
+      <div className="mb-6 space-y-4">
+        {/* 카테고리 필터 */}
+        <div className="flex gap-2 flex-wrap">
           <button
-            key={cat}
-            onClick={() => setFilter(cat!)}
+            onClick={() => setFilter('all')}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              filter === cat
+              filter === 'all'
                 ? 'bg-primary-600 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
           >
-            {cat}
+            전체
           </button>
-        ))}
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setFilter(cat!)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                filter === cat
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* 정렬 */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-600">정렬:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as 'latest' | 'oldest' | 'popular')}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="latest">최신순</option>
+            <option value="oldest">오래된순</option>
+            <option value="popular">인기순</option>
+          </select>
+        </div>
       </div>
 
       {/* 간식 카드 */}
-      {filteredSnacks.length === 0 ? (
+      {sortedSnacks.length === 0 ? (
         <div className="bg-white rounded-lg shadow p-12 text-center">
           <p className="text-gray-500 text-lg mb-4">
             아직 제안된 간식이 없습니다.
@@ -185,7 +218,7 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredSnacks.map((snack) => (
+          {sortedSnacks.map((snack) => (
             <div
               key={snack.id}
               className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden"
