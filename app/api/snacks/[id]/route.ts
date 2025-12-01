@@ -26,9 +26,12 @@ export async function DELETE(
       return apiError(404, '간식을 찾을 수 없습니다')
     }
 
-    // 간식 삭제 (관련된 투표도 자동으로 삭제됨 - onDelete: Cascade)
-    await prisma.snack.delete({
-      where: { id }
+    // Soft delete: deletedAt을 현재 시간으로 설정
+    await prisma.snack.update({
+      where: { id },
+      data: {
+        deletedAt: new Date()
+      }
     })
 
     return NextResponse.json({ message: '간식이 삭제되었습니다' })
