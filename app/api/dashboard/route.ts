@@ -139,12 +139,13 @@ export async function GET() {
       orderBy: { createdAt: 'desc' }
     })
 
-    // 이달의 MVP (soft delete 제외)
+    // 이달의 MVP (이번 달 투표 수 기준으로 정렬)
     const firstDayOfMonth = new Date()
     firstDayOfMonth.setDate(1)
     firstDayOfMonth.setHours(0, 0, 0, 0)
 
-    const monthlyMVP = await prisma.snack.findFirst({
+    // 이번 달 투표가 있는 모든 간식을 가져와서 클라이언트에서 정렬
+    const monthlySnacks = await prisma.snack.findMany({
       where: {
         deletedAt: null,
         votes: {
@@ -161,11 +162,13 @@ export async function GET() {
             }
           }
         }
-      },
-      orderBy: {
-        votes: { _count: 'desc' }
       }
     })
+
+    // 이번 달 투표 수로 정렬하여 가장 많은 투표를 받은 간식만 선택
+    const monthlyMVP = monthlySnacks.length > 0
+      ? monthlySnacks.sort((a, b) => b._count.votes - a._count.votes)[0]
+      : null
 
     // 다음 월요일 계산
     const getNextMonday = () => {
