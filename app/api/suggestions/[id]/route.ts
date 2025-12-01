@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiError } from '@/lib/api-errors'
+import { isAdmin } from '@/lib/auth'
 
 // GET: 제안 상세 조회
 export async function GET(
@@ -45,12 +46,18 @@ export async function GET(
   }
 }
 
-// DELETE: 제안 삭제
+// DELETE: 제안 삭제 (어드민 전용)
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 어드민 권한 확인
+    const admin = await isAdmin()
+    if (!admin) {
+      return apiError(403, '권한이 없습니다')
+    }
+
     const { id } = await params
 
     await prisma.suggestion.delete({

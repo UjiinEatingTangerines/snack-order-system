@@ -29,14 +29,14 @@ export default function NewSuggestionPage() {
 
       if (response.ok) {
         const data = await response.json()
-        alert('제안이 작성되었습니다!')
+        alert('상소가 올라갔습니다!')
         router.push(`/suggestions/${data.id}`)
       } else {
         const error = await response.json()
         alert(`오류: ${error.message}`)
       }
     } catch (error) {
-      alert('제안 작성 중 오류가 발생했습니다.')
+      alert('상소 작성 중 오류가 발생했습니다.')
     } finally {
       setSubmitting(false)
     }
@@ -45,7 +45,7 @@ export default function NewSuggestionPage() {
   return (
     <div>
       <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
-        💡 제안 작성하기
+        📜 상소 올리기
       </h1>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6">
@@ -87,7 +87,7 @@ export default function NewSuggestionPage() {
               onChange={(e) => setContent(e.target.value)}
               rows={8}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-              placeholder="제안하고 싶은 내용을 자유롭게 작성하세요"
+              placeholder="상소하고 싶은 내용을 자유롭게 작성하세요"
               required
             />
           </div>
@@ -98,7 +98,7 @@ export default function NewSuggestionPage() {
               disabled={submitting}
               className="flex-1 bg-primary-600 text-white py-3 rounded-md hover:bg-primary-700 disabled:bg-gray-400 transition-colors font-medium"
             >
-              {submitting ? '작성 중...' : '제안하기'}
+              {submitting ? '작성 중...' : '상소 올리기'}
             </button>
             <button
               type="button"

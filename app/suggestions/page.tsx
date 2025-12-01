@@ -60,26 +60,26 @@ export default function SuggestionsPage() {
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-          💡 제안 게시판
+          📜 상소문
         </h1>
         <button
           onClick={() => router.push('/suggestions/new')}
           className="w-full sm:w-auto text-center bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 transition-colors whitespace-nowrap"
         >
-          + 제안하기
+          + 상소 올리기
         </button>
       </div>
 
       {suggestions.length === 0 ? (
         <div className="bg-white rounded-lg shadow p-12 text-center">
           <p className="text-gray-500 text-lg mb-4">
-            아직 제안이 없습니다.
+            아직 상소문이 없습니다.
           </p>
           <button
             onClick={() => router.push('/suggestions/new')}
             className="inline-block bg-primary-600 text-white px-6 py-3 rounded-md hover:bg-primary-700 transition-colors"
           >
-            첫 제안 작성하기
+            첫 상소 올리기
           </button>
         </div>
       ) : (

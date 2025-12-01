@@ -28,10 +28,24 @@ export default function SuggestionDetailPage({ params }: { params: { id: string 
   const [commentAuthor, setCommentAuthor] = useState('')
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null)
+  const [deletingSuggestion, setDeletingSuggestion] = useState(false)
 
   useEffect(() => {
     fetchSuggestion()
+    checkAdminStatus()
   }, [])
+
+  const checkAdminStatus = async () => {
+    try {
+      const response = await fetch('/api/auth/check')
+      const data = await response.json()
+      setIsAdmin(data.isAdmin)
+    } catch (error) {
+      console.error('권한 확인 오류:', error)
+    }
+  }
 
   const fetchSuggestion = async () => {
     try {
@@ -84,6 +98,59 @@ export default function SuggestionDetailPage({ params }: { params: { id: string 
     }
   }
 
+  const handleDeleteSuggestion = async () => {
+    if (!confirm('이 상소문을 정말 삭제하시겠습니까?')) {
+      return
+    }
+
+    setDeletingSuggestion(true)
+
+    try {
+      const resolvedParams = await Promise.resolve(params)
+      const response = await fetch(`/api/suggestions/${resolvedParams.id}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        alert('상소문이 삭제되었습니다.')
+        router.push('/suggestions')
+      } else {
+        const error = await response.json()
+        alert(`오류: ${error.message}`)
+      }
+    } catch (error) {
+      alert('상소문 삭제 중 오류가 발생했습니다.')
+    } finally {
+      setDeletingSuggestion(false)
+    }
+  }
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!confirm('이 댓글을 정말 삭제하시겠습니까?')) {
+      return
+    }
+
+    setDeletingCommentId(commentId)
+
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        alert('댓글이 삭제되었습니다.')
+        fetchSuggestion()
+      } else {
+        const error = await response.json()
+        alert(`오류: ${error.message}`)
+      }
+    } catch (error) {
+      alert('댓글 삭제 중 오류가 발생했습니다.')
+    } finally {
+      setDeletingCommentId(null)
+    }
+  }
+
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('ko-KR', {
       year: 'numeric',
@@ -105,16 +172,27 @@ export default function SuggestionDetailPage({ params }: { params: { id: string 
             <span className="text-xs text-gray-500">{formatDate(comment.createdAt)}</span>
           </div>
           <p className="text-gray-700 mb-2">{comment.content}</p>
-          <button
-            onClick={() => {
-              setReplyingTo(comment.id)
-              setCommentContent('')
-              setCommentAuthor('')
-            }}
-            className="text-sm text-primary-600 hover:text-primary-700"
-          >
-            💬 답글 달기
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => {
+                setReplyingTo(comment.id)
+                setCommentContent('')
+                setCommentAuthor('')
+              }}
+              className="text-sm text-primary-600 hover:text-primary-700"
+            >
+              💬 답글 달기
+            </button>
+            {isAdmin && (
+              <button
+                onClick={() => handleDeleteComment(comment.id)}
+                disabled={deletingCommentId === comment.id}
+                className="text-sm text-red-600 hover:text-red-700 disabled:opacity-50"
+              >
+                {deletingCommentId === comment.id ? '삭제 중...' : '🗑️ 삭제'}
+              </button>
+            )}
+          </div>
 
           {replyingTo === comment.id && (
             <form onSubmit={(e) => handleCommentSubmit(e, comment.id)} className="mt-4 bg-white p-4 rounded-lg border border-gray-200">
@@ -188,9 +266,20 @@ export default function SuggestionDetailPage({ params }: { params: { id: string 
       </button>
 
       <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
-          {suggestion.title}
-        </h1>
+        <div className="flex items-start justify-between mb-4">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex-1">
+            {suggestion.title}
+          </h1>
+          {isAdmin && (
+            <button
+              onClick={handleDeleteSuggestion}
+              disabled={deletingSuggestion}
+              className="ml-4 px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
+            >
+              {deletingSuggestion ? '삭제 중...' : '🗑️ 삭제'}
+            </button>
+          )}
+        </div>
         <div className="flex items-center gap-4 text-sm text-gray-500 mb-6 pb-6 border-b border-gray-200">
           <span>✍️ {suggestion.authorName}</span>
           <span>{formatDate(suggestion.createdAt)}</span>
