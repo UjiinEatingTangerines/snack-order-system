@@ -82,14 +82,7 @@ export default function NewOrderPage() {
       )
 
       setSnacks(sorted)
-
-      // 투표가 있는 상위 간식들을 자동으로 추가
-      const topVoted = sorted
-        .filter((s: Snack) => s._count.votes > 0)
-        .slice(0, 5)
-        .map((s: Snack) => ({ snack: s, quantity: 1, price: s.price }))
-
-      setOrderItems(topVoted)
+      // 초기 상태는 빈 주문 목록
     } catch (error) {
       alert('간식 목록을 불러오는데 실패했습니다.')
     } finally {
