@@ -2,10 +2,13 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiError } from '@/lib/api-errors'
 
-// GET: 모든 간식 조회
+// GET: 모든 간식 조회 (soft delete된 항목 제외)
 export async function GET() {
   try {
     const snacks = await prisma.snack.findMany({
+      where: {
+        deletedAt: null
+      },
       include: {
         votes: true,
         _count: {

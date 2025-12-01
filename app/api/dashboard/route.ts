@@ -5,8 +5,10 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    // 전체 통계
-    const totalSnacks = await prisma.snack.count()
+    // 전체 통계 (soft delete된 항목 제외)
+    const totalSnacks = await prisma.snack.count({
+      where: { deletedAt: null }
+    })
     const totalVotes = await prisma.vote.count()
     const totalOrders = await prisma.order.count()
 
@@ -15,7 +17,10 @@ export async function GET() {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
 
     const weeklySnacks = await prisma.snack.count({
-      where: { createdAt: { gte: oneWeekAgo } }
+      where: {
+        createdAt: { gte: oneWeekAgo },
+        deletedAt: null
+      }
     })
 
     const weeklyVotes = await prisma.vote.count({
@@ -24,7 +29,10 @@ export async function GET() {
 
     // 이번 주 조르기 목록
     const weeklyProposedSnacks = await prisma.snack.findMany({
-      where: { createdAt: { gte: oneWeekAgo } },
+      where: {
+        createdAt: { gte: oneWeekAgo },
+        deletedAt: null
+      },
       orderBy: { createdAt: 'desc' },
       include: {
         _count: {
@@ -34,7 +42,10 @@ export async function GET() {
     })
 
     const weeklyProposedSnacksCount = await prisma.snack.count({
-      where: { createdAt: { gte: oneWeekAgo } }
+      where: {
+        createdAt: { gte: oneWeekAgo },
+        deletedAt: null
+      }
     })
 
     // 이번 주 월요일 0시 계산
@@ -50,9 +61,10 @@ export async function GET() {
 
     const thisWeekMonday = getThisWeekMonday()
 
-    // 이번 주 투표 수 기준 상위 5개 간식 조회 (매주 월요일 0시부터 집계)
+    // 이번 주 투표 수 기준 상위 5개 간식 조회 (매주 월요일 0시부터 집계, soft delete 제외)
     const topSnacks = await prisma.snack.findMany({
       where: {
+        deletedAt: null,
         votes: {
           some: {
             createdAt: { gte: thisWeekMonday }
@@ -76,7 +88,7 @@ export async function GET() {
       take: 5
     })
 
-    // 역대 인기 간식
+    // 역대 인기 간식 (주문 이력이 있는 항목은 soft delete되었더라도 표시)
     const allTimeTopSnacks = await prisma.snack.findMany({
       include: {
         _count: {
@@ -91,9 +103,12 @@ export async function GET() {
       take: 3
     })
 
-    // 카테고리별 분포
+    // 카테고리별 분포 (soft delete 제외)
     const snacksByCategory = await prisma.snack.groupBy({
       by: ['category'],
+      where: {
+        deletedAt: null
+      },
       _count: true
     })
 
@@ -117,17 +132,21 @@ export async function GET() {
     })
 
     const recentProposals = await prisma.snack.findMany({
+      where: {
+        deletedAt: null
+      },
       take: 5,
       orderBy: { createdAt: 'desc' }
     })
 
-    // 이달의 MVP
+    // 이달의 MVP (soft delete 제외)
     const firstDayOfMonth = new Date()
     firstDayOfMonth.setDate(1)
     firstDayOfMonth.setHours(0, 0, 0, 0)
 
     const monthlyMVP = await prisma.snack.findFirst({
       where: {
+        deletedAt: null,
         votes: {
           some: {
             createdAt: { gte: firstDayOfMonth }

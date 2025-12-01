@@ -9,12 +9,13 @@ export async function GET(request: NextRequest) {
     const since = searchParams.get('since')
     const sinceDate = since ? new Date(since) : new Date(Date.now() - 60000) // 기본값: 1분 전
 
-    // 최근 간식 제안 조회
+    // 최근 간식 제안 조회 (soft delete 제외)
     const recentSnacks = await prisma.snack.findMany({
       where: {
         createdAt: {
           gte: sinceDate
-        }
+        },
+        deletedAt: null
       },
       orderBy: {
         createdAt: 'desc'

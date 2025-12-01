@@ -35,25 +35,41 @@ export async function POST(request: Request) {
       return apiError(400, '주문할 간식을 선택해주세요')
     }
 
-    // 주문 생성 (트랜잭션 사용)
-    const order = await prisma.order.create({
-      data: {
-        notes: notes || null,
-        totalCost: totalCost || null,
-        items: {
-          create: items.map((item: { snackId: string; quantity: number }) => ({
-            snackId: item.snackId,
-            quantity: item.quantity
-          }))
-        }
-      },
-      include: {
-        items: {
-          include: {
-            snack: true
+    // 주문 생성 및 간식 soft delete 처리 (트랜잭션 사용)
+    const order = await prisma.$transaction(async (tx) => {
+      // 주문 생성
+      const newOrder = await tx.order.create({
+        data: {
+          notes: notes || null,
+          totalCost: totalCost || null,
+          items: {
+            create: items.map((item: { snackId: string; quantity: number }) => ({
+              snackId: item.snackId,
+              quantity: item.quantity
+            }))
+          }
+        },
+        include: {
+          items: {
+            include: {
+              snack: true
+            }
           }
         }
-      }
+      })
+
+      // 주문된 간식들을 soft delete 처리
+      const snackIds = items.map((item: { snackId: string }) => item.snackId)
+      await tx.snack.updateMany({
+        where: {
+          id: { in: snackIds }
+        },
+        data: {
+          deletedAt: new Date()
+        }
+      })
+
+      return newOrder
     })
 
     return NextResponse.json(order, { status: 201 })
