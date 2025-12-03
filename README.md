@@ -76,8 +76,8 @@ ADMIN_PASSWORD="your-admin-password"
 SESSION_SECRET="your-secret-key-change-this-in-production"
 
 # 앱 버전
-NEXT_PUBLIC_APP_VERSION="1.0.0"
-NEXT_PUBLIC_BUILD_DATE="2025-12-01"
+NEXT_PUBLIC_APP_VERSION="1.0.1"
+NEXT_PUBLIC_BUILD_DATE="2025-12-03"
 ```
 
 #### Neon 데이터베이스 사용 시 (Vercel 배포)
@@ -313,6 +313,19 @@ npm run lint
 ```
 
 ## 🆕 업데이트 내역
+
+### v1.0.1 (2025-12-03)
+- 🔧 **주문 상태 관리 시스템**
+  - Order 모델에 status 필드 추가 (PENDING, COMPLETED)
+  - 주문 완료 시 PENDING → COMPLETED 상태 변경
+  - 주문 현황은 PENDING 주문만 표시 (자동 클리어)
+  - 이번 주 총 금액도 자동으로 0원으로 클리어
+- 📊 **인기 간식 Top 5 개선**
+  - 이번 주 투표 수로 정렬하도록 수정
+  - 표시되는 투표 수와 순위가 일치
+- 🏆 **이달의 MVP 개선**
+  - 동률 시 먼저 생성된 간식 우선 표시
+  - 공정한 순위 결정 시스템
 
 ### v1.0.0 (2025-12-01) 🎉
 - 📜 **상소문 게시판 추가**
