@@ -77,7 +77,7 @@ export async function GET() {
     })
 
     // 이번 주 투표 수 기준 상위 5개 간식 조회 (매주 월요일 0시부터 집계, soft delete 제외)
-    const topSnacks = await prisma.snack.findMany({
+    const topSnacksRaw = await prisma.snack.findMany({
       where: {
         deletedAt: null,
         votes: {
@@ -94,14 +94,13 @@ export async function GET() {
             }
           }
         }
-      },
-      orderBy: {
-        votes: {
-          _count: 'desc'
-        }
-      },
-      take: 5
+      }
     })
+
+    // 이번 주 투표 수로 정렬 후 상위 5개 선택
+    const topSnacks = topSnacksRaw
+      .sort((a, b) => b._count.votes - a._count.votes)
+      .slice(0, 5)
 
     // 역대 인기 간식 (주문 이력이 있는 항목은 soft delete되었더라도 표시)
     const allTimeTopSnacks = await prisma.snack.findMany({
