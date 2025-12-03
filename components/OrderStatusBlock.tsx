@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Modal from './Modal'
 
 type OrderedSnack = {
   name: string
@@ -15,6 +16,10 @@ export default function OrderStatusBlock() {
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const [resetting, setResetting] = useState(false)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [showResultModal, setShowResultModal] = useState(false)
+  const [resultMessage, setResultMessage] = useState('')
+  const [resultTitle, setResultTitle] = useState('')
 
   const checkAdminStatus = async () => {
     try {
@@ -43,10 +48,6 @@ export default function OrderStatusBlock() {
   }
 
   const handleWeeklyReset = async () => {
-    if (!confirm('이번 주 데이터를 모두 리셋하시겠습니까?\n\n리셋 내용:\n- 이번 주 생성된 간식 삭제\n- 이번 주 생성된 투표 삭제\n\n주문 이력은 유지됩니다.')) {
-      return
-    }
-
     setResetting(true)
 
     try {
@@ -56,16 +57,24 @@ export default function OrderStatusBlock() {
 
       if (response.ok) {
         const data = await response.json()
-        alert(`주간 리셋 완료!\n\n완료된 주문: ${data.completedOrdersCount}개\n삭제된 간식: ${data.deletedSnacksCount}개\n삭제된 투표: ${data.deletedVotesCount}개`)
+        setResultTitle('주문 완료')
+        setResultMessage(`주간 리셋이 완료되었습니다!\n\n완료된 주문: ${data.completedOrdersCount}개\n삭제된 간식: ${data.deletedSnacksCount}개\n삭제된 투표: ${data.deletedVotesCount}개`)
+        setShowResultModal(true)
         fetchWeeklyTotal()
         // 페이지 새로고침으로 대시보드 전체 데이터 갱신
-        window.location.reload()
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500)
       } else {
         const error = await response.json()
-        alert(`오류: ${error.message}`)
+        setResultTitle('오류')
+        setResultMessage(`오류가 발생했습니다: ${error.message}`)
+        setShowResultModal(true)
       }
     } catch (error) {
-      alert('주간 리셋 중 오류가 발생했습니다.')
+      setResultTitle('오류')
+      setResultMessage('주간 리셋 중 오류가 발생했습니다.')
+      setShowResultModal(true)
     } finally {
       setResetting(false)
     }
@@ -106,7 +115,7 @@ export default function OrderStatusBlock() {
         </h2>
         {isAdmin && orderCount > 0 && (
           <button
-            onClick={handleWeeklyReset}
+            onClick={() => setShowConfirmModal(true)}
             disabled={resetting}
             className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 transition-colors text-sm font-medium"
           >
@@ -131,6 +140,27 @@ export default function OrderStatusBlock() {
           </div>
         ))}
       </div>
+
+      {/* 확인 모달 */}
+      <Modal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleWeeklyReset}
+        title="주문 완료"
+        message={`이번 주 데이터를 모두 리셋하시겠습니까?\n\n리셋 내용:\n- 이번 주 생성된 간식 삭제\n- 이번 주 생성된 투표 삭제\n\n주문 이력은 유지됩니다.`}
+        type="confirm"
+        confirmText="주문 완료"
+        cancelText="취소"
+      />
+
+      {/* 결과 모달 */}
+      <Modal
+        isOpen={showResultModal}
+        onClose={() => setShowResultModal(false)}
+        title={resultTitle}
+        message={resultMessage}
+        type="alert"
+      />
     </div>
   )
 }
