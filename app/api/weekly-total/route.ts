@@ -18,12 +18,13 @@ export async function GET() {
 
     const thisWeekMonday = getThisWeekMonday()
 
-    // 이번 주에 생성된 주문 조회 (주문 항목과 간식 정보 포함)
+    // 이번 주에 생성된 PENDING 상태의 주문만 조회 (주문 항목과 간식 정보 포함)
     const weeklyOrders = await prisma.order.findMany({
       where: {
         orderDate: {
           gte: thisWeekMonday
-        }
+        },
+        status: 'PENDING'
       },
       include: {
         items: {

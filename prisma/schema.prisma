@@ -36,12 +36,19 @@ model Vote {
   @@index([snackId])
 }
 
+// 주문 상태
+enum OrderStatus {
+  PENDING    // 주문 대기 중
+  COMPLETED  // 주문 완료
+}
+
 // 주문
 model Order {
   id        String      @id @default(cuid())
   orderDate DateTime    @default(now())
   totalCost Float?
   notes     String?
+  status    OrderStatus @default(PENDING)
   items     OrderItem[]
 }
 

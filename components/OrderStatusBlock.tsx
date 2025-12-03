@@ -56,7 +56,7 @@ export default function OrderStatusBlock() {
 
       if (response.ok) {
         const data = await response.json()
-        alert(`주간 리셋 완료!\n\n삭제된 간식: ${data.deletedSnacksCount}개\n삭제된 투표: ${data.deletedVotesCount}개`)
+        alert(`주간 리셋 완료!\n\n완료된 주문: ${data.completedOrdersCount}개\n삭제된 간식: ${data.deletedSnacksCount}개\n삭제된 투표: ${data.deletedVotesCount}개`)
         fetchWeeklyTotal()
         // 페이지 새로고침으로 대시보드 전체 데이터 갱신
         window.location.reload()
