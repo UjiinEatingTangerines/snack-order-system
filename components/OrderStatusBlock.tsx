@@ -92,6 +92,11 @@ export default function OrderStatusBlock() {
     )
   }
 
+  // 주문된 간식이 없으면 컴포넌트를 렌더링하지 않음
+  if (orderedSnacks.length === 0) {
+    return null
+  }
+
   return (
     <div className="bg-white rounded-xl shadow-lg p-6">
       <div className="flex items-center justify-between mb-4">
@@ -111,27 +116,21 @@ export default function OrderStatusBlock() {
       </div>
 
       {/* 주문된 간식 목록 */}
-      {orderedSnacks.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {orderedSnacks.map((snack, index) => (
-            <div
-              key={index}
-              className="bg-gray-50 rounded-lg px-4 py-3 flex items-center justify-between border border-gray-200 hover:shadow-md transition-shadow"
-            >
-              <span className="text-sm font-medium text-gray-800 truncate flex-1">
-                {snack.name}
-              </span>
-              <span className="text-xs bg-primary-100 text-primary-700 px-3 py-1 rounded-full ml-2 font-semibold">
-                {snack.quantity}개
-              </span>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-8 bg-gray-50 rounded-lg">
-          <p className="text-gray-500">이번 주 주문된 간식이 없습니다.</p>
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {orderedSnacks.map((snack, index) => (
+          <div
+            key={index}
+            className="bg-gray-50 rounded-lg px-4 py-3 flex items-center justify-between border border-gray-200 hover:shadow-md transition-shadow"
+          >
+            <span className="text-sm font-medium text-gray-800 truncate flex-1">
+              {snack.name}
+            </span>
+            <span className="text-xs bg-primary-100 text-primary-700 px-3 py-1 rounded-full ml-2 font-semibold">
+              {snack.quantity}개
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
