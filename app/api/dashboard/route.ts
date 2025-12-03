@@ -178,9 +178,14 @@ export async function GET() {
       }
     })
 
-    // 이번 달 투표 수로 정렬하여 가장 많은 투표를 받은 간식만 선택
+    // 이번 달 투표 수로 정렬 (내림차순), 동률이면 먼저 생성된 순서 (createdAt 오름차순)
     const monthlyMVP = monthlySnacks.length > 0
-      ? monthlySnacks.sort((a, b) => b._count.votes - a._count.votes)[0]
+      ? monthlySnacks.sort((a, b) => {
+          const voteDiff = b._count.votes - a._count.votes
+          if (voteDiff !== 0) return voteDiff
+          // 동률이면 먼저 생성된 순서
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        })[0]
       : null
 
     // 다음 월요일 계산
