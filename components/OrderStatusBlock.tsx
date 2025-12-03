@@ -104,7 +104,7 @@ export default function OrderStatusBlock() {
           <span>📊</span>
           <span>현재 주문 현황</span>
         </h2>
-        {isAdmin && (
+        {isAdmin && orderCount > 0 && (
           <button
             onClick={handleWeeklyReset}
             disabled={resetting}
