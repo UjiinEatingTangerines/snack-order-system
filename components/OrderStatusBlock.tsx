@@ -107,9 +107,9 @@ export default function OrderStatusBlock() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-800">
+    <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4">
+        <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2 text-gray-800">
           <span>📊</span>
           <span>현재 주문 현황</span>
         </h2>
@@ -117,7 +117,7 @@ export default function OrderStatusBlock() {
           <button
             onClick={() => setShowConfirmModal(true)}
             disabled={resetting}
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 transition-colors text-sm font-medium"
+            className="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 transition-colors text-sm font-medium whitespace-nowrap"
           >
             {resetting ? '처리 중...' : '✅ 주문 완료'}
           </button>
@@ -125,16 +125,16 @@ export default function OrderStatusBlock() {
       </div>
 
       {/* 주문된 간식 목록 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
         {orderedSnacks.map((snack, index) => (
           <div
             key={index}
-            className="bg-gray-50 rounded-lg px-4 py-3 flex items-center justify-between border border-gray-200 hover:shadow-md transition-shadow"
+            className="bg-gray-50 rounded-lg px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between border border-gray-200 hover:shadow-md transition-shadow"
           >
-            <span className="text-sm font-medium text-gray-800 truncate flex-1">
+            <span className="text-xs sm:text-sm font-medium text-gray-800 truncate flex-1">
               {snack.name}
             </span>
-            <span className="text-xs bg-primary-100 text-primary-700 px-3 py-1 rounded-full ml-2 font-semibold">
+            <span className="text-xs bg-primary-100 text-primary-700 px-2 sm:px-3 py-1 rounded-full ml-2 font-semibold whitespace-nowrap">
               {snack.quantity}개
             </span>
           </div>

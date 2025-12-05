@@ -11,6 +11,7 @@ import AnnouncementBanner from '@/components/AnnouncementBanner'
 export const metadata: Metadata = {
   title: 'YUM.GG',
   description: '회사 간식 주문을 쉽고 재미있게',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
   icons: {
     icon: [
       {
@@ -39,7 +40,7 @@ export default function RootLayout({
         <WeeklyOrderBanner />
         <AnnouncementBanner />
         <Navigation />
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
+        <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 flex-1 w-full">
           {children}
         </main>
         <Footer />

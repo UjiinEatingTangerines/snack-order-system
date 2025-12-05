@@ -129,34 +129,34 @@ export default function Home() {
       </h1>
 
       {/* 전체 통계 카드 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-6">
+        <div className="bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg shadow-lg p-4 sm:p-6 transform hover:scale-105 transition-transform">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-primary-100 font-medium">총 간식 수</p>
-              <p className="text-4xl font-bold text-white mt-2">{data.totalSnacks}개</p>
+              <p className="text-xs sm:text-sm text-primary-100 font-medium">총 간식 수</p>
+              <p className="text-3xl sm:text-4xl font-bold text-white mt-2">{data.totalSnacks}개</p>
             </div>
-            <div className="text-5xl opacity-80">🍪</div>
+            <div className="text-4xl sm:text-5xl opacity-80">🍪</div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform">
+        <div className="bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg shadow-lg p-4 sm:p-6 transform hover:scale-105 transition-transform">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-accent-100 font-medium">총 투표 수</p>
-              <p className="text-4xl font-bold text-white mt-2">{data.totalVotes}표</p>
+              <p className="text-xs sm:text-sm text-accent-100 font-medium">총 투표 수</p>
+              <p className="text-3xl sm:text-4xl font-bold text-white mt-2">{data.totalVotes}표</p>
             </div>
-            <div className="text-5xl opacity-80">👍</div>
+            <div className="text-4xl sm:text-5xl opacity-80">👍</div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-cream-500 to-cream-600 rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform">
+        <div className="bg-gradient-to-br from-cream-500 to-cream-600 rounded-lg shadow-lg p-4 sm:p-6 transform hover:scale-105 transition-transform sm:col-span-2 md:col-span-1">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-cream-100 font-medium">총 주문 횟수</p>
-              <p className="text-4xl font-bold text-white mt-2">{data.totalOrders}회</p>
+              <p className="text-xs sm:text-sm text-cream-100 font-medium">총 주문 횟수</p>
+              <p className="text-3xl sm:text-4xl font-bold text-white mt-2">{data.totalOrders}회</p>
             </div>
-            <div className="text-5xl opacity-80">📦</div>
+            <div className="text-4xl sm:text-5xl opacity-80">📦</div>
           </div>
         </div>
       </div>
@@ -167,14 +167,14 @@ export default function Home() {
       </div>
 
       {/* 이번 주 조르기 목록 */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center justify-between">
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span>📝</span>
             이번 주 조르기 목록
           </div>
           {data.weeklyProposedSnacksCount > 0 && (
-            <span className="text-sm text-gray-500">
+            <span className="text-xs sm:text-sm text-gray-500">
               총 {data.weeklyProposedSnacksCount}개
             </span>
           )}
@@ -191,18 +191,18 @@ export default function Home() {
                 .map((snack) => (
                   <div
                     key={snack.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-gray-900">{snack.name}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{snack.name}</p>
                         {snack.category && (
-                          <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">
+                          <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full whitespace-nowrap">
                             {snack.category}
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-3 mt-1">
+                      <div className="flex items-center gap-3 mt-1 flex-wrap">
                         {snack.proposedBy && (
                           <span className="text-xs text-gray-500">
                             by {snack.proposedBy}
@@ -213,9 +213,9 @@ export default function Home() {
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">👍</span>
-                      <span className="font-semibold text-primary-600">
+                    <div className="flex items-center gap-1 sm:gap-2 ml-2 flex-shrink-0">
+                      <span className="text-base sm:text-lg">👍</span>
+                      <span className="font-semibold text-primary-600 text-sm sm:text-base">
                         {snack._count.votes}
                       </span>
                     </div>
@@ -229,17 +229,17 @@ export default function Home() {
                 <button
                   onClick={() => setWeeklySnacksPage(prev => Math.max(1, prev - 1))}
                   disabled={weeklySnacksPage === 1}
-                  className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 sm:px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
                 >
                   이전
                 </button>
-                <span className="text-sm text-gray-600">
+                <span className="text-xs sm:text-sm text-gray-600 px-2">
                   {weeklySnacksPage} / {Math.ceil(data.weeklyProposedSnacksCount / ITEMS_PER_PAGE)}
                 </span>
                 <button
                   onClick={() => setWeeklySnacksPage(prev => Math.min(Math.ceil(data.weeklyProposedSnacksCount / ITEMS_PER_PAGE), prev + 1))}
                   disabled={weeklySnacksPage >= Math.ceil(data.weeklyProposedSnacksCount / ITEMS_PER_PAGE)}
-                  className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 sm:px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
                 >
                   다음
                 </button>
@@ -254,10 +254,10 @@ export default function Home() {
         <RecommendedSnacks />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* 이번 주 인기 간식 */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center justify-between">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
             <span>이번 주 인기 간식 Top 5</span>
             <span className="text-xs text-gray-500 font-normal">매주 월요일 리셋</span>
           </h2>
@@ -300,10 +300,10 @@ export default function Home() {
       </div>
 
       {/* 추가 정보 그리드 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6">
         {/* 역대 인기 간식 */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <span>🏆</span>
             역대 인기 간식
           </h2>
@@ -329,8 +329,8 @@ export default function Home() {
         </div>
 
         {/* 카테고리별 분포 */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <span>📊</span>
             카테고리 분포
           </h2>
@@ -369,8 +369,8 @@ export default function Home() {
         </div>
 
         {/* 다가오는 이벤트 */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6 md:col-span-2 lg:col-span-1">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <span>📅</span>
             다가오는 일정
           </h2>
@@ -395,8 +395,8 @@ export default function Home() {
       </div>
 
       {/* 최근 활동 피드 */}
-      <div className="bg-white rounded-lg shadow p-6 mt-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6 mt-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
           <span>📰</span>
           최근 활동
         </h2>

@@ -185,15 +185,15 @@ export default function NewOrderPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
         주문 생성하기
       </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* 주문 목록 */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
               주문할 간식 ({orderItems.length}개)
             </h2>
 
@@ -206,71 +206,76 @@ export default function NewOrderPage() {
                 {orderItems.map(item => (
                   <div
                     key={item.snack.id}
-                    className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
+                    className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 rounded-lg"
                   >
-                    {item.snack.imageUrl ? (
-                      <img
-                        src={item.snack.imageUrl}
-                        alt={item.snack.name}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-orange-200 rounded flex items-center justify-center">
-                        <span className="text-2xl">🍪</span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                      {item.snack.imageUrl ? (
+                        <img
+                          src={item.snack.imageUrl}
+                          alt={item.snack.name}
+                          className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-orange-200 rounded flex items-center justify-center flex-shrink-0">
+                          <span className="text-xl sm:text-2xl">🍪</span>
+                        </div>
+                      )}
 
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">{item.snack.name}</h3>
-                      <p className="text-sm text-gray-500">
-                        {item.snack._count.votes}표
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-gray-900 text-sm sm:text-base truncate">{item.snack.name}</h3>
+                        <p className="text-xs sm:text-sm text-gray-500">
+                          {item.snack._count.votes}표
+                        </p>
+                        <a
+                          href={item.snack.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs sm:text-sm text-orange-600 hover:text-orange-700 inline-block mt-1"
+                        >
+                          구매 링크 →
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between w-full sm:w-auto gap-3">
+                      <div className="flex items-center gap-2">
                         <input
                           type="number"
                           value={item.price || ''}
                           onChange={(e) => updatePrice(item.snack.id, e.target.value ? parseFloat(e.target.value) : null)}
-                          className="w-24 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-orange-500"
+                          className="w-20 sm:w-24 px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-orange-500"
                           placeholder="가격"
                           min="0"
                           step="100"
                         />
                         <span className="text-xs text-gray-500">원</span>
                       </div>
-                      <a
-                        href={item.snack.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-orange-600 hover:text-orange-700"
-                      >
-                        구매 링크 →
-                      </a>
-                    </div>
 
-                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => updateQuantity(item.snack.id, item.quantity - 1)}
+                          className="w-8 h-8 bg-gray-200 rounded hover:bg-gray-300 flex-shrink-0 text-lg"
+                        >
+                          -
+                        </button>
+                        <span className="w-8 sm:w-12 text-center font-medium text-sm sm:text-base">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.snack.id, item.quantity + 1)}
+                          className="w-8 h-8 bg-gray-200 rounded hover:bg-gray-300 flex-shrink-0 text-lg"
+                        >
+                          +
+                        </button>
+                      </div>
+
                       <button
-                        onClick={() => updateQuantity(item.snack.id, item.quantity - 1)}
-                        className="w-8 h-8 bg-gray-200 rounded hover:bg-gray-300"
+                        onClick={() => removeItem(item.snack.id)}
+                        className="text-red-600 hover:text-red-700 text-sm px-2"
                       >
-                        -
-                      </button>
-                      <span className="w-12 text-center font-medium">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => updateQuantity(item.snack.id, item.quantity + 1)}
-                        className="w-8 h-8 bg-gray-200 rounded hover:bg-gray-300"
-                      >
-                        +
+                        삭제
                       </button>
                     </div>
-
-                    <button
-                      onClick={() => removeItem(item.snack.id)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      삭제
-                    </button>
                   </div>
                 ))}
               </div>
@@ -279,38 +284,38 @@ export default function NewOrderPage() {
 
           {/* 간식 추가 */}
           {availableSnacks.length > 0 && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
                 간식 추가하기
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {availableSnacks.map(snack => (
                   <button
                     key={snack.id}
                     onClick={() => addItem(snack)}
-                    className="flex items-center gap-3 p-4 bg-gray-50 hover:bg-orange-50 rounded-lg transition-colors text-left border border-gray-200 hover:border-orange-300"
+                    className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-gray-50 hover:bg-orange-50 rounded-lg transition-colors text-left border border-gray-200 hover:border-orange-300"
                   >
                     {snack.imageUrl ? (
                       <img
                         src={snack.imageUrl}
                         alt={snack.name}
-                        className="w-16 h-16 object-cover rounded"
+                        className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded flex-shrink-0"
                       />
                     ) : (
-                      <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded flex items-center justify-center flex-shrink-0">
-                        <span className="text-3xl">🍪</span>
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded flex items-center justify-center flex-shrink-0">
+                        <span className="text-2xl sm:text-3xl">🍪</span>
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 text-sm truncate">{snack.name}</p>
+                      <p className="font-medium text-gray-900 text-xs sm:text-sm truncate">{snack.name}</p>
                       <p className="text-xs text-gray-500 mt-1">{snack._count.votes}표</p>
                       {snack.proposedBy && (
-                        <p className="text-xs text-gray-400 mt-0.5">
+                        <p className="text-xs text-gray-400 mt-0.5 truncate">
                           제안: {snack.proposedBy}
                         </p>
                       )}
                     </div>
-                    <span className="text-orange-600 text-xl flex-shrink-0">+</span>
+                    <span className="text-orange-600 text-lg sm:text-xl flex-shrink-0">+</span>
                   </button>
                 ))}
               </div>
@@ -320,8 +325,8 @@ export default function NewOrderPage() {
 
         {/* 주문 요약 */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow p-6 sticky top-4">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6 lg:sticky lg:top-4">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
               주문 요약
             </h2>
 

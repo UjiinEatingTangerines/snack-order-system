@@ -107,60 +107,60 @@ export default function OrdersPage() {
             return (
               <div key={order.id} className="bg-white rounded-lg shadow overflow-hidden">
                 {/* 주문 헤더 */}
-                <div className="bg-orange-50 px-6 py-4 border-b border-orange-100">
-                  <div className="flex justify-between items-start">
+                <div className="bg-orange-50 px-4 sm:px-6 py-3 sm:py-4 border-b border-orange-100">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-0">
                     <div>
-                      <h2 className="text-lg font-semibold text-gray-900">
+                      <h2 className="text-base sm:text-lg font-semibold text-gray-900">
                         {formatDate(order.orderDate)}
                       </h2>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-xs sm:text-sm text-gray-600 mt-1">
                         {order.items.length}개 품목 · 총 {totalQuantity}개
                       </p>
                     </div>
                     {order.totalCost && (
-                      <div className="text-right">
-                        <p className="text-sm text-gray-600">총 비용</p>
-                        <p className="text-xl font-bold text-orange-600">
+                      <div className="text-left sm:text-right">
+                        <p className="text-xs sm:text-sm text-gray-600">총 비용</p>
+                        <p className="text-lg sm:text-xl font-bold text-orange-600">
                           {order.totalCost.toLocaleString()}원
                         </p>
                       </div>
                     )}
                   </div>
                   {order.notes && (
-                    <p className="mt-3 text-sm text-gray-700 bg-white px-3 py-2 rounded">
+                    <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-700 bg-white px-2 sm:px-3 py-2 rounded">
                       📝 {order.notes}
                     </p>
                   )}
                 </div>
 
                 {/* 주문 항목 */}
-                <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="p-4 sm:p-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     {order.items.map((item) => (
                       <div
                         key={item.id}
-                        className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                        className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg"
                       >
                         {item.snack.imageUrl ? (
                           <img
                             src={item.snack.imageUrl}
                             alt={item.snack.name}
-                            className="w-16 h-16 object-cover rounded"
+                            className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded flex-shrink-0"
                           />
                         ) : (
-                          <div className="w-16 h-16 bg-orange-200 rounded flex items-center justify-center">
-                            <span className="text-2xl">🍪</span>
+                          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-orange-200 rounded flex items-center justify-center flex-shrink-0">
+                            <span className="text-xl sm:text-2xl">🍪</span>
                           </div>
                         )}
 
-                        <div className="flex-1">
-                          <h3 className="font-medium text-gray-900">{item.snack.name}</h3>
-                          <p className="text-sm text-gray-500">수량: {item.quantity}개</p>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-gray-900 text-sm sm:text-base truncate">{item.snack.name}</h3>
+                          <p className="text-xs sm:text-sm text-gray-500">수량: {item.quantity}개</p>
                           <a
                             href={item.snack.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-orange-600 hover:text-orange-700"
+                            className="text-xs sm:text-sm text-orange-600 hover:text-orange-700 inline-block mt-0.5"
                           >
                             구매 링크 →
                           </a>
@@ -172,10 +172,10 @@ export default function OrdersPage() {
 
                 {/* 재주문 버튼 - 관리자만 */}
                 {isAdmin && (
-                  <div className="px-6 pb-4">
+                  <div className="px-4 sm:px-6 pb-3 sm:pb-4">
                     <Link
                       href={`/orders/new?reorder=${order.id}`}
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
+                      className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
                     >
                       <span>🔄</span>
                       이 주문 다시하기
@@ -190,28 +190,28 @@ export default function OrdersPage() {
 
       {/* 통계 요약 */}
       {orders.length > 0 && (
-        <div className="mt-8 bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+        <div className="mt-6 sm:mt-8 bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
             주문 통계
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-orange-600">{orders.length}</p>
-              <p className="text-sm text-gray-600 mt-1">총 주문 횟수</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+            <div className="text-center p-4 bg-orange-50 rounded-lg">
+              <p className="text-2xl sm:text-3xl font-bold text-orange-600">{orders.length}</p>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">총 주문 횟수</p>
             </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-orange-600">
+            <div className="text-center p-4 bg-orange-50 rounded-lg">
+              <p className="text-2xl sm:text-3xl font-bold text-orange-600">
                 {orders.reduce((sum, o) => sum + o.items.length, 0)}
               </p>
-              <p className="text-sm text-gray-600 mt-1">총 간식 종류</p>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">총 간식 종류</p>
             </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-orange-600">
+            <div className="text-center p-4 bg-orange-50 rounded-lg sm:col-span-1">
+              <p className="text-2xl sm:text-3xl font-bold text-orange-600">
                 {orders.reduce((sum, o) =>
                   sum + o.items.reduce((s, i) => s + i.quantity, 0), 0
                 )}
               </p>
-              <p className="text-sm text-gray-600 mt-1">총 주문 개수</p>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">총 주문 개수</p>
             </div>
           </div>
         </div>

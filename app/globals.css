@@ -12,12 +12,31 @@ body {
   background: #faf8f5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Better mobile tap highlights */
+  -webkit-tap-highlight-color: rgba(234, 88, 12, 0.1);
 }
 
 /* 입력 필드 텍스트 색상 강제 지정 */
 input, textarea, select {
   color: #1f2937 !important;
   background-color: white !important;
+  /* Better mobile input experience */
+  font-size: 16px; /* Prevents iOS zoom on focus */
+}
+
+/* Ensure buttons have adequate touch targets on mobile */
+button, a {
+  min-height: 44px; /* iOS recommended minimum touch target */
+}
+
+@media (min-width: 640px) {
+  input, textarea, select {
+    font-size: inherit;
+  }
+
+  button, a {
+    min-height: auto;
+  }
 }
 
 @keyframes float {
