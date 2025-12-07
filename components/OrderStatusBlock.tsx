@@ -59,7 +59,7 @@ export default function OrderStatusBlock() {
       if (response.ok) {
         const data = await response.json()
         setResultTitle('✅ 주문 완료')
-        setResultMessage(`주문이 성공적으로 완료되었습니다!\n\n완료된 주문: ${data.completedOrdersCount}개\n삭제된 간식: ${data.deletedSnacksCount}개\n삭제된 투표: ${data.deletedVotesCount}개`)
+        setResultMessage(`주문이 성공적으로 완료되었습니다!\n\n완료된 주문: ${data.completedOrdersCount}개`)
         setShowResultModal(true)
 
         // 완료된 주문은 표시되지 않도록 데이터 갱신
@@ -150,7 +150,7 @@ export default function OrderStatusBlock() {
         onClose={() => setShowConfirmModal(false)}
         onConfirm={handleWeeklyReset}
         title="🛒 주문 완료 확인"
-        message={`현재 주문을 완료 처리하시겠습니까?\n\n✅ 완료 처리 내용:\n• PENDING 상태의 주문 → COMPLETED로 변경\n• 완료된 주문은 목록에서 숨겨집니다\n• 이번 주 생성된 간식 삭제\n• 이번 주 생성된 투표 삭제\n\n📝 주문 이력은 계속 유지됩니다.`}
+        message={`현재 주문을 완료 처리하시겠습니까?\n\n✅ 완료 처리 내용:\n• PENDING 상태의 주문 → COMPLETED로 변경\n• 완료된 주문은 현재 주문 현황에서 숨겨집니다\n• 주문 이력 페이지에서 확인할 수 있습니다\n\n📝 간식 및 투표 데이터는 그대로 유지됩니다.`}
         type="confirm"
         confirmText="✅ 주문 완료"
         cancelText="취소"

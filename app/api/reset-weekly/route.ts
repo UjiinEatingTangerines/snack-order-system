@@ -29,7 +29,7 @@ export async function POST() {
 
     // 트랜잭션으로 처리
     const result = await prisma.$transaction(async (tx) => {
-      // 1. 이번 주 생성된 PENDING 주문을 COMPLETED로 변경
+      // 이번 주 생성된 PENDING 주문을 COMPLETED로 변경
       const completedOrders = await tx.order.updateMany({
         where: {
           orderDate: {
@@ -42,37 +42,13 @@ export async function POST() {
         }
       })
 
-      // 2. 이번 주 생성된 투표 삭제
-      const deletedVotes = await tx.vote.deleteMany({
-        where: {
-          createdAt: {
-            gte: thisWeekMonday
-          }
-        }
-      })
-
-      // 3. 이번 주 생성된 간식들 soft delete
-      const deletedSnacks = await tx.snack.updateMany({
-        where: {
-          createdAt: {
-            gte: thisWeekMonday
-          },
-          deletedAt: null
-        },
-        data: {
-          deletedAt: new Date()
-        }
-      })
-
       return {
-        completedOrdersCount: completedOrders.count,
-        deletedVotesCount: deletedVotes.count,
-        deletedSnacksCount: deletedSnacks.count
+        completedOrdersCount: completedOrders.count
       }
     })
 
     return NextResponse.json({
-      message: '주간 데이터가 리셋되었습니다',
+      message: '주문이 완료되었습니다',
       ...result
     })
   } catch (error) {
