@@ -38,19 +38,31 @@ export async function POST() {
       return apiError(500, '네이버 API 키 미설정')
     }
 
-    // 다양한 카테고리의 최신 트렌딩 간식 키워드
+    // 다양한 카테고리의 최신 트렌딩 간식 키워드 (먹을 것만)
     const categories = [
-      { keyword: '초콜릿', display: 5 },
-      { keyword: '과자', display: 5 },
-      { keyword: '젤리', display: 4 },
+      { keyword: '초콜릿 간식', display: 5 },
+      { keyword: '과자 간식', display: 5 },
+      { keyword: '젤리 간식', display: 4 },
       { keyword: '사탕', display: 3 },
       { keyword: '건강간식', display: 3 },
-      { keyword: '견과류', display: 3 },
+      { keyword: '견과류 간식', display: 3 },
       { keyword: '쿠키', display: 3 },
-      { keyword: '스낵', display: 4 }
+      { keyword: '스낵 간식', display: 4 }
     ]
 
     const allProducts: any[] = []
+
+    // 먹을 수 없는 상품 필터링을 위한 키워드
+    const excludeKeywords = [
+      '케이스', '파우치', '가방', '인형', '쿠션', '베개',
+      '스티커', '키링', '키홀더', '피규어', '봉제', '플러시',
+      '담요', '이불', '매트', '쿠션', '슬리퍼', '양말',
+      '머그컵', '컵', '텀블러', '보온병', '물병', '수저',
+      '접시', '그릇', '도시락', '악세사리', '목걸이', '팔찌',
+      '반지', '귀걸이', '헤어', '옷', '의류', '티셔츠',
+      '후드', '모자', '장난감', '게임', 'DVD', 'CD',
+      '책', '포스터', '엽서', '카드'
+    ]
 
     // 각 카테고리별로 최신 인기 상품 검색 (날짜순 정렬 사용)
     for (const category of categories) {
@@ -71,8 +83,15 @@ export async function POST() {
 
       const data = await response.json()
 
+      // 먹을 수 없는 상품 필터링
+      const filteredItems = data.items.filter((item: any) => {
+        const title = item.title.toLowerCase().replace(/<\/?b>/g, '')
+        // 제외 키워드가 포함되어 있으면 필터링
+        return !excludeKeywords.some(keyword => title.includes(keyword.toLowerCase()))
+      })
+
       // 카테고리 정보 추가
-      const productsWithCategory = data.items.map((item: any) => ({
+      const productsWithCategory = filteredItems.map((item: any) => ({
         ...item,
         category: category.keyword
       }))
