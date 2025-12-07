@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Modal from '@/components/Modal'
 
 type Snack = {
   id: string
@@ -29,6 +30,10 @@ export default function NewOrderPage() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [notes, setNotes] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [modalTitle, setModalTitle] = useState('')
+  const [modalMessage, setModalMessage] = useState('')
+  const [modalType, setModalType] = useState<'alert' | 'confirm'>('alert')
 
   useEffect(() => {
     // URL에서 reorder 파라미터 확인
@@ -64,7 +69,10 @@ export default function NewOrderPage() {
       setOrderItems(previousItems)
       setNotes(order.notes || '')
     } catch (error) {
-      alert('이전 주문을 불러오는데 실패했습니다.')
+      setModalTitle('❌ 오류')
+      setModalMessage('이전 주문을 불러오는데 실패했습니다.')
+      setModalType('alert')
+      setShowModal(true)
       fetchSnacks()
     } finally {
       setLoading(false)
@@ -84,7 +92,10 @@ export default function NewOrderPage() {
       setSnacks(sorted)
       // 초기 상태는 빈 주문 목록
     } catch (error) {
-      alert('간식 목록을 불러오는데 실패했습니다.')
+      setModalTitle('❌ 오류')
+      setModalMessage('간식 목록을 불러오는데 실패했습니다.')
+      setModalType('alert')
+      setShowModal(true)
     } finally {
       setLoading(false)
     }
@@ -129,7 +140,10 @@ export default function NewOrderPage() {
 
   const handleSubmit = async () => {
     if (orderItems.length === 0) {
-      alert('주문할 간식을 선택해주세요.')
+      setModalTitle('⚠️ 알림')
+      setModalMessage('주문할 간식을 선택해주세요.')
+      setModalType('alert')
+      setShowModal(true)
       return
     }
 
@@ -158,14 +172,26 @@ export default function NewOrderPage() {
       })
 
       if (response.ok) {
-        alert('주문이 생성되었습니다!')
-        router.push('/orders')
+        setModalTitle('✅ 주문 생성 완료')
+        setModalMessage(`주문이 성공적으로 생성되었습니다!\n\n총 ${orderItems.length}개 품목\n총 ${orderItems.reduce((sum, item) => sum + item.quantity, 0)}개 간식\n${totalCost > 0 ? `총 금액: ${totalCost.toLocaleString()}원` : ''}\n\n주문 이력 페이지로 이동합니다.`)
+        setModalType('alert')
+        setShowModal(true)
+        // 모달 닫기 후 페이지 이동
+        setTimeout(() => {
+          router.push('/orders')
+        }, 2000)
       } else {
         const error = await response.json()
-        alert(`오류: ${error.message}`)
+        setModalTitle('❌ 주문 생성 실패')
+        setModalMessage(`주문 생성 중 오류가 발생했습니다:\n${error.message}`)
+        setModalType('alert')
+        setShowModal(true)
       }
     } catch (error) {
-      alert('주문 생성 중 오류가 발생했습니다.')
+      setModalTitle('❌ 네트워크 오류')
+      setModalMessage('주문 생성 중 네트워크 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.')
+      setModalType('alert')
+      setShowModal(true)
     } finally {
       setSubmitting(false)
     }
@@ -384,6 +410,15 @@ export default function NewOrderPage() {
           </div>
         </div>
       </div>
+
+      {/* 알림 모달 */}
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={modalTitle}
+        message={modalMessage}
+        type={modalType}
+      />
     </div>
   )
 }

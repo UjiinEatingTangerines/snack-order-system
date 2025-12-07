@@ -48,6 +48,7 @@ export default function OrderStatusBlock() {
   }
 
   const handleWeeklyReset = async () => {
+    setShowConfirmModal(false)
     setResetting(true)
 
     try {
@@ -57,23 +58,25 @@ export default function OrderStatusBlock() {
 
       if (response.ok) {
         const data = await response.json()
-        setResultTitle('주문 완료')
-        setResultMessage(`주간 리셋이 완료되었습니다!\n\n완료된 주문: ${data.completedOrdersCount}개\n삭제된 간식: ${data.deletedSnacksCount}개\n삭제된 투표: ${data.deletedVotesCount}개`)
+        setResultTitle('✅ 주문 완료')
+        setResultMessage(`주문이 성공적으로 완료되었습니다!\n\n완료된 주문: ${data.completedOrdersCount}개\n삭제된 간식: ${data.deletedSnacksCount}개\n삭제된 투표: ${data.deletedVotesCount}개`)
         setShowResultModal(true)
-        fetchWeeklyTotal()
-        // 페이지 새로고침으로 대시보드 전체 데이터 갱신
+
+        // 완료된 주문은 표시되지 않도록 데이터 갱신
         setTimeout(() => {
+          fetchWeeklyTotal()
+          // 페이지 전체 데이터 갱신
           window.location.reload()
-        }, 1500)
+        }, 2000)
       } else {
         const error = await response.json()
-        setResultTitle('오류')
-        setResultMessage(`오류가 발생했습니다: ${error.message}`)
+        setResultTitle('❌ 오류 발생')
+        setResultMessage(`주문 완료 중 오류가 발생했습니다:\n${error.message}`)
         setShowResultModal(true)
       }
     } catch (error) {
-      setResultTitle('오류')
-      setResultMessage('주간 리셋 중 오류가 발생했습니다.')
+      setResultTitle('❌ 오류 발생')
+      setResultMessage('주문 완료 처리 중 네트워크 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.')
       setShowResultModal(true)
     } finally {
       setResetting(false)
@@ -141,22 +144,28 @@ export default function OrderStatusBlock() {
         ))}
       </div>
 
-      {/* 확인 모달 */}
+      {/* 주문 완료 확인 모달 */}
       <Modal
         isOpen={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         onConfirm={handleWeeklyReset}
-        title="주문 완료"
-        message={`이번 주 데이터를 모두 리셋하시겠습니까?\n\n리셋 내용:\n- 이번 주 생성된 간식 삭제\n- 이번 주 생성된 투표 삭제\n\n주문 이력은 유지됩니다.`}
+        title="🛒 주문 완료 확인"
+        message={`현재 주문을 완료 처리하시겠습니까?\n\n✅ 완료 처리 내용:\n• PENDING 상태의 주문 → COMPLETED로 변경\n• 완료된 주문은 목록에서 숨겨집니다\n• 이번 주 생성된 간식 삭제\n• 이번 주 생성된 투표 삭제\n\n📝 주문 이력은 계속 유지됩니다.`}
         type="confirm"
-        confirmText="주문 완료"
+        confirmText="✅ 주문 완료"
         cancelText="취소"
       />
 
-      {/* 결과 모달 */}
+      {/* 주문 완료 결과 모달 */}
       <Modal
         isOpen={showResultModal}
-        onClose={() => setShowResultModal(false)}
+        onClose={() => {
+          setShowResultModal(false)
+          // 성공한 경우에만 페이지 새로고침
+          if (resultTitle.includes('✅')) {
+            window.location.reload()
+          }
+        }}
         title={resultTitle}
         message={resultMessage}
         type="alert"

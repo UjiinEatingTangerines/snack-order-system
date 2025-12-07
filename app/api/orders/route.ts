@@ -2,10 +2,13 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiError } from '@/lib/api-errors'
 
-// GET: 모든 주문 조회
+// GET: 완료된 주문만 조회 (주문 이력 페이지용)
 export async function GET() {
   try {
     const orders = await prisma.order.findMany({
+      where: {
+        status: 'COMPLETED'  // COMPLETED 상태의 주문만 조회
+      },
       include: {
         items: {
           include: {
@@ -37,11 +40,12 @@ export async function POST(request: Request) {
 
     // 주문 생성 및 간식 soft delete 처리 (트랜잭션 사용)
     const order = await prisma.$transaction(async (tx) => {
-      // 주문 생성
+      // 주문 생성 (기본 상태는 PENDING)
       const newOrder = await tx.order.create({
         data: {
           notes: notes || null,
           totalCost: totalCost || null,
+          status: 'PENDING',  // 명시적으로 PENDING 상태로 생성
           items: {
             create: items.map((item: { snackId: string; quantity: number }) => ({
               snackId: item.snackId,
