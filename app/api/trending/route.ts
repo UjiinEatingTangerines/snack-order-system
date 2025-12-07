@@ -38,14 +38,24 @@ export async function POST() {
       return apiError(500, '네이버 API 키 미설정')
     }
 
-    // 검색 키워드 (일반적인 키워드로 검색하여 가장 많이 검색되는 상품 조회)
-    const keywords = ['간식', '과자', '스낵']
+    // 다양한 카테고리의 최신 트렌딩 간식 키워드
+    const categories = [
+      { keyword: '초콜릿', display: 5 },
+      { keyword: '과자', display: 5 },
+      { keyword: '젤리', display: 4 },
+      { keyword: '사탕', display: 3 },
+      { keyword: '건강간식', display: 3 },
+      { keyword: '견과류', display: 3 },
+      { keyword: '쿠키', display: 3 },
+      { keyword: '스낵', display: 4 }
+    ]
+
     const allProducts: any[] = []
 
-    // 각 키워드로 검색 (정확도순 = 네이버 인기도/검색량 기반 정렬)
-    for (const keyword of keywords) {
+    // 각 카테고리별로 최신 인기 상품 검색 (날짜순 정렬 사용)
+    for (const category of categories) {
       const response = await fetch(
-        `https://openapi.naver.com/v1/search/shop.json?query=${encodeURIComponent(keyword)}&display=20&sort=sim`,
+        `https://openapi.naver.com/v1/search/shop.json?query=${encodeURIComponent(category.keyword)}&display=${category.display}&sort=date`,
         {
           headers: {
             'X-Naver-Client-Id': clientId,
@@ -55,12 +65,19 @@ export async function POST() {
       )
 
       if (!response.ok) {
-        console.error(`네이버 API 오류 (${keyword}):`, response.status)
+        console.error(`네이버 API 오류 (${category.keyword}):`, response.status)
         continue
       }
 
       const data = await response.json()
-      allProducts.push(...data.items)
+
+      // 카테고리 정보 추가
+      const productsWithCategory = data.items.map((item: any) => ({
+        ...item,
+        category: category.keyword
+      }))
+
+      allProducts.push(...productsWithCategory)
     }
 
     // 중복 제거 (링크 기준)
@@ -68,12 +85,27 @@ export async function POST() {
       new Map(allProducts.map(item => [item.link, item])).values()
     )
 
+    // 카테고리 다양성을 위한 균형 잡힌 선택
+    const selectedProducts: any[] = []
+    const categoryCounts = new Map<string, number>()
+
+    // 각 카테고리에서 최대 3개씩만 선택하여 다양성 확보
+    for (const product of uniqueProducts) {
+      const categoryCount = categoryCounts.get(product.category) || 0
+      if (categoryCount < 3) {
+        selectedProducts.push(product)
+        categoryCounts.set(product.category, categoryCount + 1)
+
+        if (selectedProducts.length >= 20) break
+      }
+    }
+
     // 기존 트렌딩 데이터 삭제
     await prisma.trendingSnack.deleteMany({})
 
     // 새 트렌딩 데이터 저장
     const trendingSnacks = await Promise.all(
-      uniqueProducts.slice(0, 20).map((product, index) =>
+      selectedProducts.slice(0, 20).map((product, index) =>
         prisma.trendingSnack.create({
           data: {
             name: product.title.replace(/<\/?b>/g, ''), // HTML 태그 제거
@@ -88,7 +120,11 @@ export async function POST() {
 
     return NextResponse.json({
       message: `${trendingSnacks.length}개의 트렌딩 간식을 업데이트했습니다.`,
-      count: trendingSnacks.length
+      count: trendingSnacks.length,
+      categories: Array.from(categoryCounts.entries()).map(([category, count]) => ({
+        category,
+        count
+      }))
     })
   } catch (error) {
     console.error('트렌딩 업데이트 오류:', error)
