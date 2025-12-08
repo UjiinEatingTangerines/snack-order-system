@@ -228,13 +228,14 @@ export default function NewOrderPage() {
                 주문할 간식을 추가해주세요.
               </p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-3 overflow-x-hidden">
                 {orderItems.map(item => (
                   <div
                     key={item.snack.id}
-                    className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 rounded-lg"
+                    className="flex flex-col gap-3 p-3 sm:p-4 bg-gray-50 rounded-lg"
                   >
-                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                    {/* 간식 정보 */}
+                    <div className="flex items-center gap-3">
                       {item.snack.imageUrl ? (
                         <img
                           src={item.snack.imageUrl}
@@ -248,7 +249,7 @@ export default function NewOrderPage() {
                       )}
 
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900 text-sm sm:text-base truncate">{item.snack.name}</h3>
+                        <h3 className="font-medium text-gray-900 text-sm sm:text-base break-words">{item.snack.name}</h3>
                         <p className="text-xs sm:text-sm text-gray-500">
                           {item.snack._count.votes}표
                         </p>
@@ -263,8 +264,10 @@ export default function NewOrderPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between w-full sm:w-auto gap-3">
+                    {/* 컨트롤 영역 */}
+                    <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-200">
                       <div className="flex items-center gap-2">
+                        <label className="text-xs text-gray-600">가격:</label>
                         <input
                           type="number"
                           value={item.price || ''}
@@ -278,13 +281,14 @@ export default function NewOrderPage() {
                       </div>
 
                       <div className="flex items-center gap-2">
+                        <label className="text-xs text-gray-600">수량:</label>
                         <button
                           onClick={() => updateQuantity(item.snack.id, item.quantity - 1)}
                           className="w-8 h-8 bg-gray-200 rounded hover:bg-gray-300 flex-shrink-0 text-lg"
                         >
                           -
                         </button>
-                        <span className="w-8 sm:w-12 text-center font-medium text-sm sm:text-base">
+                        <span className="w-10 text-center font-medium text-sm sm:text-base">
                           {item.quantity}
                         </span>
                         <button
@@ -297,7 +301,7 @@ export default function NewOrderPage() {
 
                       <button
                         onClick={() => removeItem(item.snack.id)}
-                        className="text-red-600 hover:text-red-700 text-sm px-2"
+                        className="ml-auto text-red-600 hover:text-red-700 text-sm px-3 py-1 bg-red-50 rounded hover:bg-red-100 transition-colors"
                       >
                         삭제
                       </button>

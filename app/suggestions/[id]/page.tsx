@@ -171,7 +171,7 @@ export default function SuggestionDetailPage({ params }: { params: { id: string 
             <span className="font-medium text-gray-900">{comment.authorName}</span>
             <span className="text-xs text-gray-500">{formatDate(comment.createdAt)}</span>
           </div>
-          <p className="text-gray-700 mb-2">{comment.content}</p>
+          <p className="text-gray-700 mb-2 whitespace-pre-wrap break-words">{comment.content}</p>
           <div className="flex items-center gap-4">
             <button
               onClick={() => {
