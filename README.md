@@ -263,7 +263,8 @@ snack-order-system/
 
 1. GitHub 저장소와 Vercel 연결
 2. 환경 변수 설정:
-   - `DATABASE_URL` (PostgreSQL Direct Connection)
+   - `DATABASE_URL` (PostgreSQL Pooler Connection - 런타임용)
+   - `DIRECT_DATABASE_URL` (PostgreSQL Direct Connection - 마이그레이션용, **필수**)
    - `NAVER_CLIENT_ID`
    - `NAVER_CLIENT_SECRET`
    - `ADMIN_PASSWORD`
@@ -272,6 +273,11 @@ snack-order-system/
    - `NEXT_PUBLIC_BUILD_DATE`
 3. 자동 배포 활성화
 4. `git push` 시 자동 배포
+
+**중요**: Neon PostgreSQL 사용 시
+- `DATABASE_URL`: Pooler 연결 (`-pooler` 포함) - 런타임에서 사용
+- `DIRECT_DATABASE_URL`: Direct 연결 (`-pooler` 제외) - Prisma migrate에서 사용
+- Direct connection은 advisory lock을 지원하므로 마이그레이션에 필수입니다
 
 ### 수동 배포
 
