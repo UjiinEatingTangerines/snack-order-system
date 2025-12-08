@@ -6,13 +6,25 @@ import Modal from './Modal'
 type OrderedSnack = {
   name: string
   quantity: number
+  orders: number
+}
+
+type OrderDetail = {
+  id: string
   orderDate: Date
+  totalCost: number | null
+  notes: string | null
+  itemCount: number
+  totalQuantity: number
 }
 
 export default function OrderStatusBlock() {
   const [orderCount, setOrderCount] = useState(0)
   const [totalCost, setTotalCost] = useState(0)
+  const [totalQuantity, setTotalQuantity] = useState(0)
+  const [totalTypes, setTotalTypes] = useState(0)
   const [orderedSnacks, setOrderedSnacks] = useState<OrderedSnack[]>([])
+  const [orderDetails, setOrderDetails] = useState<OrderDetail[]>([])
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const [resetting, setResetting] = useState(false)
@@ -38,7 +50,10 @@ export default function OrderStatusBlock() {
         const data = await response.json()
         setOrderCount(data.orderCount)
         setTotalCost(data.totalCost)
+        setTotalQuantity(data.totalQuantity || 0)
+        setTotalTypes(data.totalTypes || 0)
         setOrderedSnacks(data.orderedSnacks || [])
+        setOrderDetails(data.orderDetails || [])
       }
     } catch (error) {
       console.error('주간 주문 조회 실패:', error)
@@ -109,9 +124,17 @@ export default function OrderStatusBlock() {
     return null
   }
 
+  const formatDate = (date: Date) => {
+    return new Date(date).toLocaleDateString('ko-KR', {
+      month: 'short',
+      day: 'numeric',
+      weekday: 'short'
+    })
+  }
+
   return (
     <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-6">
         <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2 text-gray-800">
           <span>📊</span>
           <span>현재 주문 현황</span>
@@ -127,21 +150,102 @@ export default function OrderStatusBlock() {
         )}
       </div>
 
-      {/* 주문된 간식 목록 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
-        {orderedSnacks.map((snack, index) => (
-          <div
-            key={index}
-            className="bg-gray-50 rounded-lg px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between border border-gray-200 hover:shadow-md transition-shadow"
-          >
-            <span className="text-xs sm:text-sm font-medium text-gray-800 truncate flex-1">
-              {snack.name}
-            </span>
-            <span className="text-xs bg-primary-100 text-primary-700 px-2 sm:px-3 py-1 rounded-full ml-2 font-semibold whitespace-nowrap">
-              {snack.quantity}개
-            </span>
+      {/* 주문 통계 요약 */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 sm:p-4 border border-blue-200">
+          <p className="text-xs sm:text-sm text-blue-600 font-medium mb-1">총 주문 건수</p>
+          <p className="text-2xl sm:text-3xl font-bold text-blue-700">{orderCount}</p>
+          <p className="text-xs text-blue-500 mt-1">건</p>
+        </div>
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-3 sm:p-4 border border-purple-200">
+          <p className="text-xs sm:text-sm text-purple-600 font-medium mb-1">간식 종류</p>
+          <p className="text-2xl sm:text-3xl font-bold text-purple-700">{totalTypes}</p>
+          <p className="text-xs text-purple-500 mt-1">종류</p>
+        </div>
+        <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-3 sm:p-4 border border-orange-200">
+          <p className="text-xs sm:text-sm text-orange-600 font-medium mb-1">총 주문 개수</p>
+          <p className="text-2xl sm:text-3xl font-bold text-orange-700">{totalQuantity}</p>
+          <p className="text-xs text-orange-500 mt-1">개</p>
+        </div>
+        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-3 sm:p-4 border border-green-200">
+          <p className="text-xs sm:text-sm text-green-600 font-medium mb-1">총 금액</p>
+          <p className="text-xl sm:text-2xl font-bold text-green-700">{totalCost.toLocaleString()}</p>
+          <p className="text-xs text-green-500 mt-1">원</p>
+        </div>
+      </div>
+
+      {/* 주문 상세 내역 */}
+      {orderDetails.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-sm sm:text-base font-semibold text-gray-700 mb-3 flex items-center gap-2">
+            <span>📋</span>
+            <span>주문 상세</span>
+          </h3>
+          <div className="space-y-2">
+            {orderDetails.map((order) => (
+              <div
+                key={order.id}
+                className="bg-gray-50 rounded-lg p-3 border border-gray-200 hover:bg-gray-100 transition-colors"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs sm:text-sm font-medium text-gray-700">
+                      {formatDate(order.orderDate)}
+                    </span>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                      {order.itemCount}종류
+                    </span>
+                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
+                      {order.totalQuantity}개
+                    </span>
+                    {order.totalCost && (
+                      <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                        {order.totalCost.toLocaleString()}원
+                      </span>
+                    )}
+                  </div>
+                  {order.notes && (
+                    <span className="text-xs text-gray-500 truncate max-w-[200px]" title={order.notes}>
+                      📝 {order.notes}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+      )}
+
+      {/* 주문된 간식 목록 */}
+      <div>
+        <h3 className="text-sm sm:text-base font-semibold text-gray-700 mb-3 flex items-center gap-2">
+          <span>🍪</span>
+          <span>간식 목록</span>
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+          {orderedSnacks.map((snack, index) => (
+            <div
+              key={index}
+              className="bg-gray-50 rounded-lg px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs sm:text-sm font-medium text-gray-800 truncate flex-1">
+                  {snack.name}
+                </span>
+                <div className="flex items-center gap-1.5 ml-2">
+                  <span className="text-xs bg-primary-100 text-primary-700 px-2 sm:px-2.5 py-1 rounded-full font-semibold whitespace-nowrap">
+                    {snack.quantity}개
+                  </span>
+                </div>
+              </div>
+              {snack.orders > 1 && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {snack.orders}건의 주문에 포함
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* 주문 완료 확인 모달 */}

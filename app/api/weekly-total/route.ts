@@ -46,19 +46,50 @@ export async function GET() {
     // 주문 개수
     const orderCount = weeklyOrders.length
 
-    // 주문된 간식 목록 정리
-    const orderedSnacks = weeklyOrders.flatMap(order =>
-      order.items.map(item => ({
-        name: item.snack.name,
-        quantity: item.quantity,
-        orderDate: order.orderDate
-      }))
-    )
+    // 주문된 간식 목록 정리 (간식별로 수량 합산)
+    const snackMap = new Map<string, { name: string; quantity: number; orders: number }>()
+
+    weeklyOrders.forEach(order => {
+      order.items.forEach(item => {
+        const existing = snackMap.get(item.snack.name)
+        if (existing) {
+          existing.quantity += item.quantity
+          existing.orders += 1
+        } else {
+          snackMap.set(item.snack.name, {
+            name: item.snack.name,
+            quantity: item.quantity,
+            orders: 1
+          })
+        }
+      })
+    })
+
+    const orderedSnacks = Array.from(snackMap.values()).sort((a, b) => b.quantity - a.quantity)
+
+    // 총 간식 개수 계산
+    const totalQuantity = orderedSnacks.reduce((sum, snack) => sum + snack.quantity, 0)
+
+    // 총 간식 종류
+    const totalTypes = orderedSnacks.length
+
+    // 주문 상세 정보
+    const orderDetails = weeklyOrders.map(order => ({
+      id: order.id,
+      orderDate: order.orderDate,
+      totalCost: order.totalCost,
+      notes: order.notes,
+      itemCount: order.items.length,
+      totalQuantity: order.items.reduce((sum, item) => sum + item.quantity, 0)
+    }))
 
     return NextResponse.json({
       orderCount,
       totalCost,
-      orderedSnacks
+      totalQuantity,
+      totalTypes,
+      orderedSnacks,
+      orderDetails
     })
   } catch (error) {
     console.error('주간 주문 조회 오류:', error)
