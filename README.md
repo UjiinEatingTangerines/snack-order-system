@@ -4,32 +4,37 @@
 
 ## ✨ 주요 기능
 
-### 🎯 사용자 기능 (모든 사용자)
+### 🎯 사용자 기능
+
 - **간식 조르기**: 네이버 쇼핑 검색으로 간식을 쉽게 찾아 제안
 - **내 간식 주머니**: 자신이 제안한 간식 목록 확인 (우측 하단 플로팅 버튼)
-- **실시간 대시보드**: 이번 주 인기 간식 Top 5와 최근 제안 확인 (매주 월요일 리셋)
-- **오늘의 추천 간식**: 무한 스크롤 애니메이션으로 추천 간식 표시 (10분마다 자동 새로고침)
-- **트렌딩 간식**: 네이버 쇼핑에서 가장 많이 검색되는 인기 간식 실시간 조회 (5초 쿨다운)
-- **배경음악**: YouTube 배경음악 재생 (자동 재생, 볼륨 조절 가능)
-- **주간 현황**: 이번 주 주문 현황을 상단 배너에서 실시간 확인
-
-### 👨‍💼 관리자 기능 (관리자 전용)
 - **투표 시스템**: 제안된 간식에 투표하여 인기도 측정
+- **실시간 대시보드**: 이번 주 인기 간식 Top 5와 최근 제안 확인
+- **오늘의 추천 간식**: 무한 스크롤 애니메이션으로 추천 간식 표시
+- **트렌딩 간식**: 네이버 쇼핑 인기 간식 실시간 조회 (다양한 카테고리)
+- **상소문 게시판**: 자유롭게 의견을 남길 수 있는 커뮤니티 (댓글/대댓글 지원)
+- **배경음악**: YouTube 배경음악 재생 (자동 재생, 볼륨 조절 가능)
+
+### 👨‍💼 관리자 기능
+
 - **주문 생성**: 투표 결과를 바탕으로 주문 목록 작성
-- **주문 이력**: 과거 주문 내역 조회 및 재주문
-- **주문 완료**: 이번 주 데이터 리셋 (간식/투표 클리어)
-- **카테고리 필터**: 간식을 카테고리별로 분류 및 필터링
+- **주문 관리**: 과거 주문 내역 조회 및 재주문
+- **주문 완료**: PENDING 주문을 COMPLETED로 상태 변경
+- **현재 주문 현황**: 상세한 통계와 간식 목록 표시
+  - 총 주문 건수, 간식 종류, 총 개수, 총 금액
+  - 주문별 상세 내역 (날짜, 종류, 개수, 금액)
+  - 간식별 썸네일, 제안자, 구매 링크
+- **카테고리 관리**: 간식을 카테고리별로 분류 및 필터링
 - **간식 목록 관리**: 제안된 모든 간식 확인 및 삭제
 - **상소문 관리**: 게시글 및 댓글 삭제
 - **공지사항 관리**: 전체 사용자에게 공지 띄우기
 
 ### 🎨 사용자 경험
-- **실시간 활동 알림**: 간식 조르기 및 주문 생성 시 상단에 알림 표시
-- **공지사항 배너**: 관리자가 등록한 공지사항을 전체 페이지 상단에 표시
-- **상소문 게시판**: 자유롭게 의견을 남길 수 있는 커뮤니티 게시판 (댓글/대댓글 지원)
-- **재미있는 에러 메시지**: 20가지 간식 테마 에러 메시지 (5초마다 변경)
-- **로그인/로그아웃 알림**: 우측 상단 토스트 알림
-- **로딩 오버레이**: 인증 처리 중 화면 차단
+
+- **실시간 활동 알림**: 간식 조르기 및 주문 생성 시 상단 알림
+- **공지사항 배너**: 전체 페이지 상단에 공지사항 표시
+- **재미있는 에러 메시지**: 20가지 간식 테마 에러 메시지
+- **모달 팝업**: 사용자 친화적인 확인/알림 메시지
 - **모바일 반응형**: 모든 디바이스에서 최적화된 UI
 - **크로스 플랫폼 일관성**: 맥/윈도우에서 동일한 색상 표시
 
@@ -64,8 +69,7 @@ npm run dev
 
 ```env
 # 데이터베이스
-DATABASE_URL="file:./dev.db"  # 로컬 개발용 SQLite
-# DATABASE_URL="postgresql://..."  # 프로덕션용 PostgreSQL (Direct connection, pooler 제외)
+DATABASE_URL="postgresql://..."  # PostgreSQL 연결 문자열
 
 # 네이버 쇼핑 API (필수)
 NAVER_CLIENT_ID="발급받은_클라이언트_ID"
@@ -77,23 +81,14 @@ SESSION_SECRET="your-secret-key-change-this-in-production"
 
 # 앱 버전
 NEXT_PUBLIC_APP_VERSION="1.0.1"
-NEXT_PUBLIC_BUILD_DATE="2025-12-03"
+NEXT_PUBLIC_BUILD_DATE="2025-12-08"
 ```
 
-#### Neon 데이터베이스 사용 시 (Vercel 배포)
+#### 데이터베이스 설정
 
-⚠️ **중요**: Neon 사용 시 반드시 **Direct Connection URL**을 사용하세요.
-
-Neon Dashboard에서 Connection Details를 확인하면:
-- **Pooled connection**: `postgresql://...@ep-xxx-pooler.region.aws.neon.tech/...`
-- **Direct connection**: `postgresql://...@ep-xxx.region.aws.neon.tech/...` ✅
-
-Vercel 환경 변수 설정:
-1. **Settings** → **Environment Variables**
-2. `DATABASE_URL`에 **Direct connection URL** 입력 (pooler 제외)
-3. 예: `postgresql://user:password@ep-xxx.region.aws.neon.tech/dbname?sslmode=require`
-
-**주의**: `-pooler`가 포함된 URL은 마이그레이션 시 타임아웃 오류가 발생합니다.
+**Neon PostgreSQL 사용 시**:
+- Neon Dashboard에서 **Direct Connection URL** 사용 (`-pooler` 제외)
+- 예: `postgresql://user:password@ep-xxx.region.aws.neon.tech/dbname?sslmode=require`
 
 ### 3. 네이버 API 발급 방법
 
@@ -104,8 +99,8 @@ Vercel 환경 변수 설정:
 ## 📚 기술 스택
 
 - **Frontend**: Next.js 14 (App Router), React 18, TypeScript
-- **Styling**: Tailwind CSS with Custom Color Palette
-- **Database**: SQLite (개발), PostgreSQL (프로덕션)
+- **Styling**: Tailwind CSS
+- **Database**: PostgreSQL
 - **ORM**: Prisma 5
 - **API**: Next.js API Routes
 - **External API**: Naver Shopping API
@@ -120,57 +115,53 @@ snack-order-system/
 │   ├── api/                      # API 라우트
 │   │   ├── announcements/       # 공지사항 API
 │   │   ├── auth/                # 인증 관련 API
-│   │   │   ├── check/          # 세션 확인
-│   │   │   ├── login/          # 로그인
-│   │   │   └── logout/         # 로그아웃
-│   │   ├── comments/           # 댓글 관련 API
-│   │   ├── dashboard/          # 대시보드 데이터
-│   │   ├── my-snacks/          # 내 간식 주머니
-│   │   ├── orders/             # 주문 관련 API
-│   │   ├── recommendations/    # 오늘의 추천 간식
-│   │   ├── reset-weekly/       # 주간 리셋 API
-│   │   ├── search-snacks/      # 네이버 쇼핑 검색
-│   │   ├── snacks/             # 간식 관련 API
-│   │   ├── suggestions/        # 상소문 관련 API
-│   │   ├── trending/           # 트렌딩 간식
-│   │   └── weekly-total/       # 주간 주문 현황
+│   │   ├── comments/            # 댓글 관련 API
+│   │   ├── dashboard/           # 대시보드 데이터
+│   │   ├── my-snacks/           # 내 간식 주머니
+│   │   ├── orders/              # 주문 관련 API
+│   │   ├── recommendations/     # 오늘의 추천 간식
+│   │   ├── reset-weekly/        # 주간 리셋 API
+│   │   ├── search-snacks/       # 네이버 쇼핑 검색
+│   │   ├── snacks/              # 간식 관련 API
+│   │   ├── suggestions/         # 상소문 관련 API
+│   │   ├── trending/            # 트렌딩 간식
+│   │   └── weekly-total/        # 주간 주문 현황
 │   ├── admin/
-│   │   └── announce/           # 공지사항 관리 페이지
-│   ├── facker/                 # 관리자 로그인 (숨김 URL)
-│   ├── my-snacks/              # 내 간식 주머니 페이지
-│   ├── orders/                 # 주문 페이지
-│   ├── propose/                # 간식 제안 페이지
-│   ├── snacks/                 # 간식 목록 페이지
-│   ├── suggestions/            # 상소문 게시판
-│   └── page.tsx                # 간식 허브 (대시보드)
+│   │   └── announce/            # 공지사항 관리 페이지
+│   ├── facker/                  # 관리자 로그인 (숨김 URL)
+│   ├── my-snacks/               # 내 간식 주머니 페이지
+│   ├── orders/                  # 주문 페이지
+│   ├── propose/                 # 간식 제안 페이지
+│   ├── snacks/                  # 간식 목록 페이지
+│   ├── suggestions/             # 상소문 게시판
+│   └── page.tsx                 # 간식 허브 (대시보드)
 ├── components/
-│   ├── ActivityNotification.tsx # 실시간 활동 알림
-│   ├── AnnouncementBanner.tsx  # 공지사항 배너
-│   ├── ErrorDisplay.tsx        # 재미있는 에러 페이지
+│   ├── ActivityNotification.tsx  # 실시간 활동 알림
+│   ├── AnnouncementBanner.tsx   # 공지사항 배너
+│   ├── ErrorDisplay.tsx         # 재미있는 에러 페이지
 │   ├── FloatingMySnacksButton.tsx  # 내 간식 주머니 플로팅 버튼
-│   ├── FloatingVoteButton.tsx  # 투표 플로팅 버튼
-│   ├── Footer.tsx              # 푸터 (버전 정보 포함)
-│   ├── LoadingOverlay.tsx      # 로딩 오버레이
-│   ├── Navigation.tsx          # 네비게이션 바
-│   ├── OrderStatusBlock.tsx    # 주문 현황 블록 (주문 완료 버튼 포함)
-│   ├── RecommendedSnacks.tsx   # 오늘의 추천 간식 (무한 스크롤)
-│   ├── Toast.tsx               # 토스트 알림
-│   ├── TrendingSnacks.tsx      # 트렌딩 간식 위젯
-│   └── WeeklyOrderBanner.tsx   # 주간 주문 배너
+│   ├── Footer.tsx               # 푸터 (버전 정보)
+│   ├── Modal.tsx                # 모달 팝업 컴포넌트
+│   ├── Navigation.tsx           # 네비게이션 바
+│   ├── OrderStatusBlock.tsx     # 주문 현황 블록
+│   ├── RecommendedSnacks.tsx    # 오늘의 추천 간식
+│   ├── Toast.tsx                # 토스트 알림
+│   ├── TrendingSnacks.tsx       # 트렌딩 간식 위젯
+│   └── WeeklyOrderBanner.tsx    # 주간 주문 배너
 ├── lib/
-│   ├── auth.ts                 # 인증 유틸리티
-│   └── prisma.ts               # Prisma 클라이언트
+│   ├── api-errors.ts            # API 에러 유틸리티
+│   ├── auth.ts                  # 인증 유틸리티
+│   └── prisma.ts                # Prisma 클라이언트
 ├── prisma/
-│   ├── schema.prisma           # 데이터베이스 스키마
-│   └── dev.db                  # SQLite 데이터베이스 (개발용)
-├── middleware.ts               # Next.js 미들웨어 (인증 체크)
-└── public/                     # 정적 파일
+│   └── schema.prisma            # 데이터베이스 스키마
+├── middleware.ts                # Next.js 미들웨어 (인증)
+└── public/                      # 정적 파일
 ```
 
 ## 🗄️ 데이터베이스 스키마
 
 ### Snack (간식)
-- `id`, `name`, `url`, `imageUrl`, `category`, `proposedBy`, `createdAt`, `deletedAt` (soft delete)
+- `id`, `name`, `url`, `imageUrl`, `category`, `price`, `proposedBy`, `createdAt`, `deletedAt`
 - 관계: `votes[]`, `orderItems[]`
 
 ### Vote (투표)
@@ -178,7 +169,7 @@ snack-order-system/
 - 관계: `snack`
 
 ### Order (주문)
-- `id`, `orderDate`, `totalCost`, `notes`
+- `id`, `orderDate`, `totalCost`, `notes`, `status` (PENDING/COMPLETED)
 - 관계: `items[]`
 
 ### OrderItem (주문 항목)
@@ -189,94 +180,96 @@ snack-order-system/
 - `id`, `name`, `url`, `imageUrl`, `source`, `rank`, `fetchedAt`
 
 ### Suggestion (상소문)
-- `id`, `title`, `content`, `authorName`, `createdAt`
+- `id`, `title`, `content`, `authorName`, `createdAt`, `updatedAt`
 - 관계: `comments[]`
 
 ### Comment (댓글)
 - `id`, `content`, `authorName`, `suggestionId`, `parentCommentId`, `createdAt`
-- 관계: `suggestion`, `parentComment`, `replies[]` (self-referencing)
+- 관계: `suggestion`, `parentComment`, `replies[]`
 
 ### Announcement (공지사항)
-- `id`, `message`, `createdAt`
+- `id`, `message`, `createdBy`, `isActive`, `createdAt`, `updatedAt`
 
 ## 🎯 사용 가이드
 
-### 일반 사용자 (모든 사용자)
+### 일반 사용자
 
 #### 1. 간식 조르기
-1. 네비게이션에서 "간식 조르기" 클릭 (모든 사용자 접근 가능)
-2. **네이버 쇼핑 검색** 사용:
-   - 검색창에 원하는 간식 입력
-   - 검색 결과에서 원하는 상품 클릭
-   - 자동으로 이름, 링크, 이미지 입력됨
-3. 또는 **직접 입력**으로 수동 입력
+1. "간식 조르기" 메뉴 클릭
+2. **네이버 쇼핑 검색**으로 간식 검색
+3. 검색 결과 클릭하면 자동으로 정보 입력
 4. "간식 조르기" 버튼 클릭
-5. 자동으로 제안자 이름 저장 (localStorage)
+5. 제안자 이름 자동 저장 (localStorage)
 
-#### 2. 내 간식 주머니 확인하기
-1. **우측 하단 🎒 플로팅 버튼** 클릭 (모든 페이지에서 접근 가능)
+#### 2. 내 간식 주머니
+1. 우측 하단 🎒 플로팅 버튼 클릭
 2. 자신이 제안한 간식 목록 확인
-3. 각 간식의 투표 수와 제안 시간 확인
-4. "이름 변경" 버튼으로 제안자 이름 수정 가능
+3. 투표 수와 제안 시간 확인
+4. 이름 변경 가능
 
-### 관리자
-
-#### 1. 관리자 로그인
-1. 브라우저 주소창에 `/facker` 입력 (숨겨진 URL)
-2. 관리자 비밀번호 입력
-3. 비밀번호 표시/숨김 토글 가능
-4. 로그인 성공 시 토스트 알림 및 자동 리다이렉트
-
-#### 2. 투표하기
+#### 3. 투표하기
 1. "간식 목록" 페이지 방문
 2. 원하는 간식의 👍 버튼 클릭
 3. 실시간으로 투표 수 업데이트
 
-#### 3. 주문 생성하기
+### 관리자
+
+#### 1. 로그인
+1. `/facker` URL 접속 (숨겨진 URL)
+2. 관리자 비밀번호 입력
+3. 로그인 성공 시 자동 리다이렉트
+
+#### 2. 주문 생성
 1. "주문하기" 메뉴 클릭
-2. 자동으로 투표 상위 간식이 추가됨
-3. 수량 조절 및 간식 추가/제거
+2. 간식 추가/수정 및 수량 조절
+3. 가격 입력 (선택)
 4. 메모 입력 (선택)
 5. "주문 완료" 버튼 클릭
 
-#### 4. 재주문하기
+#### 3. 주문 완료
+1. 홈 페이지의 "현재 주문 현황" 확인
+2. "✅ 주문 완료" 버튼 클릭
+3. PENDING 주문이 COMPLETED로 상태 변경
+4. 완료된 주문은 현재 현황에서 숨겨짐
+5. 주문 이력 페이지에서 확인 가능
+
+#### 4. 재주문
 1. "주문 이력" 페이지에서 과거 주문 확인
 2. "🔄 이 주문 다시하기" 버튼 클릭
-3. 기존 주문 내역이 자동으로 불러와짐
+3. 기존 주문 내역 자동 불러오기
 4. 필요시 수정 후 주문 완료
 
 ## 🔐 보안 기능
 
-- **숨겨진 로그인 URL**: `/facker`로만 관리자 로그인 가능
+- **숨겨진 로그인 URL**: `/facker`로만 관리자 접근
 - **쿠키 기반 세션**: HttpOnly 쿠키로 세션 관리
 - **미들웨어 보호**: 관리자 페이지 자동 리다이렉트
 - **로그인/로그아웃 알림**: 토스트 및 로딩 오버레이
-- **비밀번호 표시/숨김**: 사용자 편의성 제공
 
 ## 🎨 디자인 특징
 
-- **컬러 팔레트**: 따뜻한 오렌지/크림 톤 (primary, accent, cream)
+- **컬러 팔레트**: 따뜻한 오렌지/크림 톤
 - **Pretendard 폰트**: 한글 최적화 폰트
 - **모바일 반응형**: 햄버거 메뉴, 플렉시블 레이아웃
 - **재미있는 UX**:
   - 20가지 간식 테마 에러 메시지
-  - 로그인 실패 시 랜덤 재미있는 메시지
-  - 5초마다 변경되는 에러 페이지
+  - 모달 팝업으로 사용자 피드백
   - 토스트 알림 및 로딩 오버레이
+  - 플로팅 버튼 애니메이션
 
 ## 📝 배포
 
 ### Vercel 배포
 
 1. GitHub 저장소와 Vercel 연결
-2. Vercel 대시보드에서 환경 변수 설정:
+2. 환경 변수 설정:
+   - `DATABASE_URL` (PostgreSQL Direct Connection)
    - `NAVER_CLIENT_ID`
    - `NAVER_CLIENT_SECRET`
    - `ADMIN_PASSWORD`
    - `SESSION_SECRET`
    - `NEXT_PUBLIC_APP_VERSION`
    - `NEXT_PUBLIC_BUILD_DATE`
-   - `DATABASE_URL` (Vercel Postgres 연결)
 3. 자동 배포 활성화
 4. `git push` 시 자동 배포
 
@@ -310,146 +303,61 @@ npx prisma migrate dev
 
 # 린트 검사
 npm run lint
+
+# 버전 업데이트
+npm run version:patch  # 1.0.0 → 1.0.1
+npm run version:minor  # 1.0.0 → 1.1.0
+npm run version:major  # 1.0.0 → 2.0.0
 ```
 
-## 🆕 업데이트 내역
+## 🆕 최근 업데이트
 
-### v1.0.1 (2025-12-03)
-- 🔧 **주문 상태 관리 시스템**
-  - Order 모델에 status 필드 추가 (PENDING, COMPLETED)
-  - 주문 완료 시 PENDING → COMPLETED 상태 변경
-  - 주문 현황은 PENDING 주문만 표시 (자동 클리어)
-  - 이번 주 총 금액도 자동으로 0원으로 클리어
-- 📊 **인기 간식 Top 5 개선**
-  - 이번 주 투표 수로 정렬하도록 수정
-  - 표시되는 투표 수와 순위가 일치
-- 🏆 **이달의 MVP 개선**
-  - 동률 시 먼저 생성된 간식 우선 표시
-  - 공정한 순위 결정 시스템
+### v1.0.1 (2025-12-08)
 
-### v1.0.0 (2025-12-01) 🎉
-- 📜 **상소문 게시판 추가**
-  - 자유롭게 의견을 남길 수 있는 커뮤니티 게시판
-  - 댓글 및 대댓글 기능 (무한 depth)
-  - 어드민 삭제 기능 (게시글/댓글)
-  - 실시간 댓글 작성 및 답글
-- ✅ **주문 완료 기능 추가**
-  - 어드민이 주문 완료 버튼 클릭 시 주간 데이터 리셋
-  - 이번 주 생성된 간식 soft delete 처리
-  - 이번 주 생성된 투표 삭제
-  - 주문 이력은 유지 (soft delete 간식도 주문 이력에서 확인 가능)
-  - 통계 자동 업데이트 (총 간식 수, 총 투표 수 등)
-- 🗑️ **Soft Delete 시스템**
-  - 주문된 간식은 soft delete 처리되어 목록에서 숨김
-  - 주문 이력에서는 계속 확인 가능
-  - 매달 자동으로 오래된 soft delete 간식 정리
-- 📊 **간식 목록 정렬 기능**
-  - 최신순, 오래된순, 인기순 정렬
-  - soft delete된 간식은 목록에서 제외
-- 📢 **공지사항 시스템 개선**
-  - 전체 페이지 상단에 공지사항 배너 표시
-  - 닫기 버튼으로 일시적으로 숨김 가능
-  - 어드민이 자유롭게 공지사항 등록/수정
-- 🎨 **UI/UX 개선**
-  - 상소문 게시판 아이콘 및 문구 개선
-  - 주문 완료 버튼 색상 및 위치 최적화
-  - 삭제 확인 메시지 및 처리 중 상태 표시
+#### 🎨 UI/UX 개선
+- **주문 항목 오버플로우 수정**: 주문 생성 페이지에서 긴 간식 이름이 컨테이너를 벗어나는 문제 해결
+- **댓글 줄바꿈 표시**: 상소문 댓글에서 개행 문자가 정상적으로 표시되도록 개선
+- **주문 이력 전체 표시**: 모든 주문(PENDING, COMPLETED)을 주문 이력 페이지에서 확인 가능
+- **주문 상태 배지**: 각 주문의 상태를 시각적으로 구분 (✅ 완료, ⏳ 대기중)
+
+#### 📊 현재 주문 현황 대폭 개선
+- **통계 요약 카드 추가**:
+  - 총 주문 건수 (파란색)
+  - 간식 종류 (보라색)
+  - 총 주문 개수 (주황색)
+  - 총 금액 (녹색)
+- **주문 상세 내역**: 각 주문별 날짜, 종류, 개수, 금액, 메모 표시
+- **간식 목록 개선**: 수량 기준 정렬, 여러 주문 포함 여부 표시
+
+#### 🍪 간식 카드 개선
+- **썸네일 이미지 표시**: 간식의 실제 이미지 표시
+- **제안자 정보**: 누가 조르기한 간식인지 표시
+- **구매 링크**: 클릭 시 구매 페이지로 바로 이동
+- **호버 효과**: 마우스 오버 시 시각적 피드백
+
+#### 🔧 주문 상태 관리
+- Order 모델에 `status` 필드 추가 (PENDING, COMPLETED)
+- 주문 완료 시 PENDING → COMPLETED 상태 변경
+- 간식 및 투표 데이터 보존 (삭제하지 않음)
+
+### v1.0.0 (2025-12-01)
+- 📜 상소문 게시판 추가 (댓글/대댓글 지원)
+- ✅ 주문 완료 기능 추가
+- 🗑️ Soft Delete 시스템 구현
+- 📊 간식 목록 정렬 기능
+- 📢 공지사항 시스템 개선
 
 ### v0.12.0 (2025-11-27)
-- 🎵 **배경음악 플레이어 추가**
-  - YouTube 배경음악 자동 재생
-  - 재생/일시정지 및 볼륨 조절 기능 (0~100%)
-  - 우측 하단 고정 컨트롤러
-  - 무한 반복 재생
-- 🎁 **오늘의 추천 간식 기능**
-  - 네이버 쇼핑 API 추천 상품 표시
-  - 왼쪽으로 흐르는 무한 스크롤 애니메이션 (30초)
-  - 호버 시 애니메이션 일시정지
-  - 10분마다 자동 새로고침
-- 📊 **인기 간식 Top 5 주간 집계**
-  - 매주 월요일 0시부터 투표 집계 시작
-  - 이번 주에 투표된 간식만 Top 5에 표시
-  - 월요일이 되면 자동으로 리셋
-  - UI에 "매주 월요일 리셋" 안내 표시
-- 🔥 **트렌딩 간식 검색 개선**
-  - 네이버 인기도 기반 검색으로 변경
-  - 실제로 가장 많이 검색되는 인기 간식 조회
-  - 검색 키워드를 일반 용어로 변경 ('간식', '과자', '스낵')
+- 🎵 배경음악 플레이어 추가
+- 🎁 오늘의 추천 간식 기능
+- 📊 인기 간식 Top 5 주간 집계
+- 🔥 트렌딩 간식 검색 개선
 
 ### v0.11.0 (2025-11-26)
 - 🗳️ 투표 기능 오픈
-  - 일반 사용자도 간식 목록 접근 가능
-  - 간식당 1번만 투표 가능 (localStorage 기반)
-  - 투표한 간식은 체크마크로 표시
-  - 재투표 방지 및 알림
-- 📊 카테고리 분포 기능 구현
-  - 상위 5개 카테고리 표시
-  - 컬러풀한 프로그레스 바로 시각화
-  - 퍼센티지와 개수 동시 표시
+- 📊 카테고리 분포 기능
 - 📄 이번 주 조르기 목록 페이징
-  - 페이지당 5개 항목 표시
-  - 이전/다음 버튼으로 페이지 이동
-- 🎨 간식 목록 UI 개선
-  - 카테고리 배지 크기 고정
 - 🔧 데이터베이스 관리 도구 추가
-  - SQL 초기화 스크립트 추가
-  - `npm run db:reset` 명령어 추가
-
-### v0.8.0 (2025-11-26)
-- 🔔 실시간 활동 알림 시스템 추가
-  - 간식 조르기 알림: 누군가 간식을 조르면 상단에 알림 표시
-  - 주문 생성 알림: 새로운 주문이 생성되면 알림 표시
-  - 10초마다 자동으로 새로운 활동 확인
-  - 5초간 표시 후 자동 사라짐
-  - 최대 5개 알림 스택 관리
-- 📊 주문 현황 블록 개선
-  - 상단 배너는 금액만 간단히 표시
-  - 홈 페이지에 상세한 주문 현황 블록 추가
-  - 주문된 간식 목록을 그리드로 표시
-- 🎨 크로스 플랫폼 UI 개선
-  - 맥/윈도우에서 동일한 색상 표시
-  - 다크모드 강제 비활성화
-  - 입력 필드 텍스트 색상 통일
-  - 배경색 고정값 사용
-- 🔧 데이터베이스 연결 안정성 개선
-  - Neon direct connection 사용 가이드 추가
-  - 마이그레이션 타임아웃 문제 해결
-
-### v0.7.0 (2025-11-26)
-- 💰 간식 가격 기능 추가
-  - 네이버 쇼핑 검색 시 가격 자동 입력
-  - 수기로 가격 입력 가능
-  - 주문 생성 시 개별 가격 수정 가능
-  - 주문 총 금액 자동 계산 및 저장
-- 🔒 일반 사용자에게 주문 관련 버튼 숨김
-- 📊 주간 배너에 주문된 간식 목록 표시 (클릭하여 펼침/접기)
-
-### v0.6.0 (2025-11-26)
-- 🎈 플로팅 버튼 둥둥 떠다니는 애니메이션 추가
-- 📍 플로팅 버튼이 footer와 겹치지 않도록 자동 위치 조정
-- 🎨 플로팅 버튼 색상 변경 (오렌지-노랑 그라데이션)
-
-### v0.5.0 (2025-11-26)
-- 🎒 "내 제안" 메뉴를 "내 간식 주머니"로 변경
-- 🎨 페이지 타이틀 및 아이콘 업데이트
-- 🔓 간식 제안 기능을 일반 사용자에게도 개방
-- 📝 "간식 제안"을 "간식 조르기"로 변경
-- 🎈 내 간식 주머니 플로팅 버튼 추가 (우측 하단)
-- 🔄 메뉴 순서 변경: 간식 허브 → 간식 조르기
-
-### v0.4.0 (2025-11-26)
-- ✨ 내가 제안한 간식 페이지 추가
-- 🔍 네이버 쇼핑 검색 기능 추가
-- 🔐 관리자 로그인 URL 변경 (`/facker`)
-- 🎨 로그인/로그아웃 토스트 알림
-- 🚀 로딩 오버레이 추가
-- 🎭 비밀번호 표시/숨김 토글
-
-### v0.3.0
-- 📊 주간 주문 현황 배너
-- 🎨 YUM.GG 브랜딩
-- 📱 모바일 반응형 개선
-- 🎭 재미있는 에러 메시지
 
 ## 🤝 기여하기
 
@@ -471,5 +379,4 @@ Made with ❤️ by 김현우
 
 ---
 
-**배포 URL**: https://yum.gg (예정)
 **관리자 로그인**: `/facker`
