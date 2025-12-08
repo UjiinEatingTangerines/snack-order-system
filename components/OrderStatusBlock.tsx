@@ -4,9 +4,13 @@ import { useState, useEffect } from 'react'
 import Modal from './Modal'
 
 type OrderedSnack = {
+  id: string
   name: string
   quantity: number
   orders: number
+  imageUrl: string | null
+  url: string
+  proposedBy: string | null
 }
 
 type OrderDetail = {
@@ -223,27 +227,65 @@ export default function OrderStatusBlock() {
           <span>간식 목록</span>
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
-          {orderedSnacks.map((snack, index) => (
-            <div
-              key={index}
-              className="bg-gray-50 rounded-lg px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 hover:shadow-md transition-shadow"
+          {orderedSnacks.map((snack) => (
+            <a
+              key={snack.id}
+              href={snack.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-gray-50 rounded-lg p-3 border border-gray-200 hover:shadow-lg hover:border-primary-300 transition-all cursor-pointer group"
             >
-              <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm font-medium text-gray-800 truncate flex-1">
-                  {snack.name}
-                </span>
-                <div className="flex items-center gap-1.5 ml-2">
-                  <span className="text-xs bg-primary-100 text-primary-700 px-2 sm:px-2.5 py-1 rounded-full font-semibold whitespace-nowrap">
-                    {snack.quantity}개
-                  </span>
+              <div className="flex items-start gap-3">
+                {/* 썸네일 */}
+                {snack.imageUrl ? (
+                  <img
+                    src={snack.imageUrl}
+                    alt={snack.name}
+                    className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded border border-gray-300 flex-shrink-0 group-hover:border-primary-400 transition-colors"
+                  />
+                ) : (
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-orange-100 to-orange-200 rounded flex items-center justify-center flex-shrink-0 group-hover:from-orange-200 group-hover:to-orange-300 transition-colors">
+                    <span className="text-2xl sm:text-3xl">🍪</span>
+                  </div>
+                )}
+
+                {/* 간식 정보 */}
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-xs sm:text-sm font-medium text-gray-800 mb-1 line-clamp-2 group-hover:text-primary-700 transition-colors">
+                    {snack.name}
+                  </h4>
+
+                  {/* 제안자 */}
+                  {snack.proposedBy && (
+                    <p className="text-xs text-gray-500 mb-1 flex items-center gap-1">
+                      <span>👤</span>
+                      <span className="truncate">{snack.proposedBy}</span>
+                    </p>
+                  )}
+
+                  {/* 수량 및 주문 건수 */}
+                  <div className="flex items-center gap-1.5 flex-wrap mt-2">
+                    <span className="text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full font-semibold whitespace-nowrap">
+                      {snack.quantity}개
+                    </span>
+                    {snack.orders > 1 && (
+                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full whitespace-nowrap">
+                        {snack.orders}건
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
-              {snack.orders > 1 && (
-                <p className="text-xs text-gray-500 mt-1">
-                  {snack.orders}건의 주문에 포함
-                </p>
-              )}
-            </div>
+
+              {/* 구매 링크 표시 */}
+              <div className="mt-2 pt-2 border-t border-gray-200">
+                <span className="text-xs text-primary-600 group-hover:text-primary-700 flex items-center gap-1">
+                  <span>🛒</span>
+                  <span>구매 페이지로 이동</span>
+                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </span>
+              </div>
+            </a>
           ))}
         </div>
       </div>

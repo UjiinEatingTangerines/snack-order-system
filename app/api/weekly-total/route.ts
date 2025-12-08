@@ -47,19 +47,31 @@ export async function GET() {
     const orderCount = weeklyOrders.length
 
     // 주문된 간식 목록 정리 (간식별로 수량 합산)
-    const snackMap = new Map<string, { name: string; quantity: number; orders: number }>()
+    const snackMap = new Map<string, {
+      id: string
+      name: string
+      quantity: number
+      orders: number
+      imageUrl: string | null
+      url: string
+      proposedBy: string | null
+    }>()
 
     weeklyOrders.forEach(order => {
       order.items.forEach(item => {
-        const existing = snackMap.get(item.snack.name)
+        const existing = snackMap.get(item.snack.id)
         if (existing) {
           existing.quantity += item.quantity
           existing.orders += 1
         } else {
-          snackMap.set(item.snack.name, {
+          snackMap.set(item.snack.id, {
+            id: item.snack.id,
             name: item.snack.name,
             quantity: item.quantity,
-            orders: 1
+            orders: 1,
+            imageUrl: item.snack.imageUrl,
+            url: item.snack.url,
+            proposedBy: item.snack.proposedBy
           })
         }
       })
