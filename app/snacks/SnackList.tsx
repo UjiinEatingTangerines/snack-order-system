@@ -9,6 +9,7 @@ type Snack = {
   url: string
   imageUrl: string | null
   category: string | null
+  price: number | null
   proposedBy: string | null
   createdAt: Date
   _count: {
@@ -24,6 +25,16 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
   const [votedSnacks, setVotedSnacks] = useState<Set<string>>(new Set())
   const [isAdmin, setIsAdmin] = useState(false)
   const [deletingSnackId, setDeletingSnackId] = useState<string | null>(null)
+  const [editingSnack, setEditingSnack] = useState<Snack | null>(null)
+  const [editForm, setEditForm] = useState({
+    name: '',
+    url: '',
+    imageUrl: '',
+    category: '',
+    price: '',
+    proposedBy: ''
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // 쿠키에서 투표 이력 불러오기
   useEffect(() => {
@@ -106,6 +117,50 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
       alert('투표 중 오류가 발생했습니다.')
     } finally {
       setVotingSnackId(null)
+    }
+  }
+
+  const handleEdit = (snack: Snack) => {
+    setEditingSnack(snack)
+    setEditForm({
+      name: snack.name,
+      url: snack.url,
+      imageUrl: snack.imageUrl || '',
+      category: snack.category || '',
+      price: snack.price?.toString() || '',
+      proposedBy: snack.proposedBy || ''
+    })
+  }
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingSnack) return
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch(`/api/snacks/${editingSnack.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm)
+      })
+
+      if (response.ok) {
+        const updatedSnack = await response.json()
+        // 로컬 상태 업데이트
+        setSnacks(snacks.map(s =>
+          s.id === updatedSnack.id ? updatedSnack : s
+        ))
+        setEditingSnack(null)
+        alert('간식 정보가 수정되었습니다.')
+      } else {
+        const data = await response.json()
+        alert(data.error || '수정 중 오류가 발생했습니다.')
+      }
+    } catch (error) {
+      alert('수정 중 오류가 발생했습니다.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -283,13 +338,19 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
                   </a>
                 </div>
 
-                {/* 어드민 전용 삭제 버튼 */}
+                {/* 어드민 전용 수정/삭제 버튼 */}
                 {isAdmin && (
-                  <div className="mt-3 pt-3 border-t border-gray-200">
+                  <div className="mt-3 pt-3 border-t border-gray-200 flex gap-2">
+                    <button
+                      onClick={() => handleEdit(snack)}
+                      className="flex-1 px-3 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-md text-sm font-medium transition-colors"
+                    >
+                      ✏️ 수정
+                    </button>
                     <button
                       onClick={() => handleDelete(snack.id, snack.name)}
                       disabled={deletingSnackId === snack.id}
-                      className="w-full px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {deletingSnackId === snack.id ? '삭제 중...' : '🗑️ 삭제'}
                     </button>
@@ -298,6 +359,120 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* 수정 모달 */}
+      {editingSnack && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">간식 정보 수정</h2>
+                <button
+                  onClick={() => setEditingSnack(null)}
+                  className="text-gray-400 hover:text-gray-600 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <form onSubmit={handleEditSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    간식 이름 <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    구매 링크 <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={editForm.url}
+                    onChange={(e) => setEditForm({ ...editForm, url: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    이미지 URL
+                  </label>
+                  <input
+                    type="url"
+                    value={editForm.imageUrl}
+                    onChange={(e) => setEditForm({ ...editForm, imageUrl: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    카테고리
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.category}
+                    onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="예: 과자, 초콜릿, 음료 등"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    가격 (원)
+                  </label>
+                  <input
+                    type="number"
+                    value={editForm.price}
+                    onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="예: 5000"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    제안자
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.proposedBy}
+                    onChange={(e) => setEditForm({ ...editForm, proposedBy: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setEditingSnack(null)}
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? '저장 중...' : '저장'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       )}
     </div>
