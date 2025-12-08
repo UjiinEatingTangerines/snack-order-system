@@ -2,13 +2,10 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiError } from '@/lib/api-errors'
 
-// GET: 완료된 주문만 조회 (주문 이력 페이지용)
+// GET: 전체 주문 이력 조회 (모든 상태 포함)
 export async function GET() {
   try {
     const orders = await prisma.order.findMany({
-      where: {
-        status: 'COMPLETED'  // COMPLETED 상태의 주문만 조회
-      },
       include: {
         items: {
           include: {

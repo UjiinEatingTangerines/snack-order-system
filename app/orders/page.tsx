@@ -8,6 +8,7 @@ type Order = {
   orderDate: Date
   totalCost: number | null
   notes: string | null
+  status: string
   items: {
     id: string
     quantity: number
@@ -110,9 +111,18 @@ export default function OrdersPage() {
                 <div className="bg-orange-50 px-4 sm:px-6 py-3 sm:py-4 border-b border-orange-100">
                   <div className="flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-0">
                     <div>
-                      <h2 className="text-base sm:text-lg font-semibold text-gray-900">
-                        {formatDate(order.orderDate)}
-                      </h2>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h2 className="text-base sm:text-lg font-semibold text-gray-900">
+                          {formatDate(order.orderDate)}
+                        </h2>
+                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                          order.status === 'COMPLETED'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-yellow-100 text-yellow-700'
+                        }`}>
+                          {order.status === 'COMPLETED' ? '✅ 완료' : '⏳ 대기중'}
+                        </span>
+                      </div>
                       <p className="text-xs sm:text-sm text-gray-600 mt-1">
                         {order.items.length}개 품목 · 총 {totalQuantity}개
                       </p>
