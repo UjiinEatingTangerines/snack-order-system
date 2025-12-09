@@ -11,6 +11,7 @@ type OrderedSnack = {
   imageUrl: string | null
   url: string
   proposedBy: string | null
+  voteCount: number
 }
 
 type OrderDetail = {
@@ -263,7 +264,7 @@ export default function OrderStatusBlock() {
                     </p>
                   )}
 
-                  {/* 수량 및 주문 건수 */}
+                  {/* 수량, 주문 건수, 투표 수 */}
                   <div className="flex items-center gap-1.5 flex-wrap mt-2">
                     <span className="text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full font-semibold whitespace-nowrap">
                       {snack.quantity}개
@@ -273,6 +274,10 @@ export default function OrderStatusBlock() {
                         {snack.orders}건
                       </span>
                     )}
+                    <span className="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full whitespace-nowrap flex items-center gap-0.5">
+                      <span>👍</span>
+                      <span>{snack.voteCount}</span>
+                    </span>
                   </div>
                 </div>
               </div>

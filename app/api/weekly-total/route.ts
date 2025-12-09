@@ -55,6 +55,7 @@ export async function GET() {
       imageUrl: string | null
       url: string
       proposedBy: string | null
+      voteCount: number
     }>()
 
     weeklyOrders.forEach(order => {
@@ -71,10 +72,33 @@ export async function GET() {
             orders: 1,
             imageUrl: item.snack.imageUrl,
             url: item.snack.url,
-            proposedBy: item.snack.proposedBy
+            proposedBy: item.snack.proposedBy,
+            voteCount: 0 // 나중에 계산
           })
         }
       })
+    })
+
+    // 각 간식의 투표 수 조회
+    const snackIds = Array.from(snackMap.keys())
+    const voteCounts = await prisma.vote.groupBy({
+      by: ['snackId'],
+      where: {
+        snackId: {
+          in: snackIds
+        }
+      },
+      _count: {
+        id: true
+      }
+    })
+
+    // 투표 수를 snackMap에 반영
+    voteCounts.forEach(voteCount => {
+      const snack = snackMap.get(voteCount.snackId)
+      if (snack) {
+        snack.voteCount = voteCount._count.id
+      }
     })
 
     const orderedSnacks = Array.from(snackMap.values()).sort((a, b) => b.quantity - a.quantity)
