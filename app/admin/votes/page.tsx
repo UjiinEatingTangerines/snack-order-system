@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 
 interface Vote {
   id: string
@@ -183,12 +182,11 @@ export default function AdminVotesPage() {
                   <span className="text-lg">👍 {item.voteCount}</span>
                 </div>
                 {item.snack?.imageUrl && (
-                  <div className="relative w-full h-20 mb-2 rounded overflow-hidden">
-                    <Image
+                  <div className="w-full h-20 mb-2 rounded overflow-hidden">
+                    <img
                       src={item.snack.imageUrl}
                       alt={item.snack.name}
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 )}
@@ -308,12 +306,11 @@ export default function AdminVotesPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
                         {vote.snack.imageUrl && (
-                          <div className="relative w-10 h-10 rounded overflow-hidden flex-shrink-0">
-                            <Image
+                          <div className="w-10 h-10 rounded overflow-hidden flex-shrink-0">
+                            <img
                               src={vote.snack.imageUrl}
                               alt={vote.snack.name}
-                              fill
-                              className="object-cover"
+                              className="w-full h-full object-cover"
                             />
                           </div>
                         )}
