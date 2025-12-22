@@ -59,6 +59,7 @@ export default function Navigation() {
     { href: '/suggestions', label: '📜 상소문', adminOnly: false },
     { href: '/orders', label: '주문 이력', adminOnly: true },
     { href: '/orders/new', label: '주문하기', adminOnly: true },
+    { href: '/admin/votes', label: '📊 투표 내역', adminOnly: true },
     { href: '/admin/announce', label: '📢 외치기', adminOnly: true },
   ]
 
