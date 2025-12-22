@@ -57,6 +57,7 @@ export default function Navigation() {
     { href: '/propose', label: '간식 조르기', adminOnly: false },
     { href: '/snacks', label: '간식 목록', adminOnly: false },
     { href: '/votes', label: '📊 투표 현황', adminOnly: false },
+    { href: '/users/activity', label: '👥 사용자 활동', adminOnly: false },
     { href: '/suggestions', label: '📜 상소문', adminOnly: false },
     { href: '/orders', label: '주문 이력', adminOnly: true },
     { href: '/orders/new', label: '주문하기', adminOnly: true },
