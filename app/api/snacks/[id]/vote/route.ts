@@ -63,17 +63,27 @@ export async function POST(
 // DELETE: 투표 취소
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { voterName } = await request.json()
-    const { id } = params
+    const { id } = await params
 
-    // 가장 최근 투표 찾아서 삭제
+    // 쿠키에서 이미 투표한 간식 목록 가져오기
+    const cookieStore = await cookies()
+    const votedSnacksCookie = cookieStore.get(VOTED_SNACKS_COOKIE)
+    const votedSnacks: string[] = votedSnacksCookie
+      ? JSON.parse(votedSnacksCookie.value)
+      : []
+
+    // 해당 간식에 투표하지 않았으면 에러
+    if (!votedSnacks.includes(id)) {
+      return apiError(403, '투표하지 않은 간식입니다')
+    }
+
+    // 가장 최근 투표 찾아서 삭제 (쿠키 기반이므로 이 사용자의 투표)
     const vote = await prisma.vote.findFirst({
       where: {
         snackId: id,
-        voterName: voterName || null,
       },
       orderBy: { createdAt: 'desc' }
     })
@@ -84,6 +94,16 @@ export async function DELETE(
 
     await prisma.vote.delete({
       where: { id: vote.id }
+    })
+
+    // 쿠키에서 해당 간식 제거
+    const updatedVotedSnacks = votedSnacks.filter(snackId => snackId !== id)
+    cookieStore.set(VOTED_SNACKS_COOKIE, JSON.stringify(updatedVotedSnacks), {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: COOKIE_MAX_AGE,
+      path: '/',
     })
 
     // 업데이트된 투표 수 조회

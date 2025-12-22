@@ -132,6 +132,45 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
     }
   }
 
+  const handleCancelVote = async (snackId: string, snackName: string) => {
+    if (!confirm(`"${snackName}"에 대한 투표를 취소하시겠습니까?`)) {
+      return
+    }
+
+    setVotingSnackId(snackId)
+
+    try {
+      const response = await fetch(`/api/snacks/${snackId}/vote`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        const { voteCount } = await response.json()
+
+        // 로컬 상태 업데이트
+        setSnacks(snacks.map(s =>
+          s.id === snackId
+            ? { ...s, _count: { votes: voteCount } }
+            : s
+        ))
+
+        // 투표한 간식 목록에서 제거
+        const newVotedSnacks = new Set(votedSnacks)
+        newVotedSnacks.delete(snackId)
+        setVotedSnacks(newVotedSnacks)
+
+        alert('✅ 투표가 취소되었습니다!')
+      } else {
+        const data = await response.json()
+        alert(data.error || '투표 취소 중 오류가 발생했습니다.')
+      }
+    } catch (error) {
+      alert('투표 취소 중 오류가 발생했습니다.')
+    } finally {
+      setVotingSnackId(null)
+    }
+  }
+
   const handleEdit = (snack: Snack) => {
     setEditingSnack(snack)
     setEditForm({
@@ -325,20 +364,30 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
                 )}
 
                 <div className="flex items-center justify-between gap-3">
-                  <button
-                    onClick={() => handleVote(snack.id)}
-                    disabled={votingSnackId === snack.id || votedSnacks.has(snack.id)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
-                      votedSnacks.has(snack.id)
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-orange-50 hover:bg-primary-100 text-primary-700'
-                    } disabled:opacity-50`}
-                  >
-                    <span className="text-xl">{votedSnacks.has(snack.id) ? '✓' : '👍'}</span>
-                    <span className="text-sm font-medium">
-                      {snack._count.votes}
-                    </span>
-                  </button>
+                  {votedSnacks.has(snack.id) ? (
+                    <button
+                      onClick={() => handleCancelVote(snack.id, snack.name)}
+                      disabled={votingSnackId === snack.id}
+                      className="flex items-center gap-2 px-3 py-2 rounded-md transition-colors bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 disabled:opacity-50"
+                    >
+                      <span className="text-xl">✓</span>
+                      <span className="text-sm font-medium">
+                        {snack._count.votes}
+                      </span>
+                      <span className="text-xs ml-1">취소</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleVote(snack.id)}
+                      disabled={votingSnackId === snack.id}
+                      className="flex items-center gap-2 px-3 py-2 rounded-md transition-colors bg-orange-50 hover:bg-primary-100 text-primary-700 disabled:opacity-50"
+                    >
+                      <span className="text-xl">👍</span>
+                      <span className="text-sm font-medium">
+                        {snack._count.votes}
+                      </span>
+                    </button>
+                  )}
 
                   <a
                     href={snack.url}
