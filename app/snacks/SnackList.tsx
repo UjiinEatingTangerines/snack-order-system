@@ -79,13 +79,21 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
       return
     }
 
+    // 투표자 이름 입력 받기
+    const voterName = prompt('투표자 이름을 입력해주세요 (선택사항, 취소하면 익명으로 투표됩니다):')
+
+    // 사용자가 취소를 누르면 투표를 진행하지 않음
+    if (voterName === null) {
+      return
+    }
+
     setVotingSnackId(snackId)
 
     try {
       const response = await fetch(`/api/snacks/${snackId}/vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ voterName: null }) // 익명 투표
+        body: JSON.stringify({ voterName: voterName.trim() || null })
       })
 
       if (response.ok) {
@@ -102,6 +110,10 @@ export default function SnackList({ initialSnacks }: { initialSnacks: Snack[] })
         const newVotedSnacks = new Set(votedSnacks)
         newVotedSnacks.add(snackId)
         setVotedSnacks(newVotedSnacks)
+
+        // 투표 완료 메시지
+        const voterNameDisplay = voterName.trim() || '익명'
+        alert(`✅ ${voterNameDisplay}님의 투표가 완료되었습니다!`)
       } else {
         const data = await response.json()
         alert(data.error || '투표 중 오류가 발생했습니다.')
